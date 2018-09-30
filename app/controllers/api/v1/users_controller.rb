@@ -15,13 +15,4 @@ class Api::V1::UsersController < Api::V1::ApiController
         end
     end
 
-private
-
-    def user_hidden_fields
-        [:password,
-         :password_confirmation,
-         :password_digest,
-         :id]
-    end
-
 end
