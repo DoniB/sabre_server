@@ -75,4 +75,13 @@ RSpec.describe User, type: :model do
     expect(user.authenticate password.reverse).to_not be_truthy
   end
 
+  it 'should have secure tokens' do
+    user = create(:user)
+    token1 = user.secure_tokens.create
+    token2 = user.secure_tokens.create
+
+    expect(token1.user).to eq(user)
+    expect(token2.user).to eq(user)
+  end
+
 end
