@@ -46,8 +46,7 @@ RSpec.describe User, type: :model do
   it 'saves emails with the lower case' do
     email = 'EMAIL@EXAMPLE.COM'
     user = create(:user, email: email)
-    expect(user).to_not be_valid
-    expect(user.email).to be_equal email.downcase
+    expect(user.email).to eq(email.downcase)
   end
 
   it 'is not valid with different password and password_confirmation' do
