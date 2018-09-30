@@ -1,5 +1,6 @@
-class Api::V1::ApiController < ApplicationController
-    # Global Methods
-
-
+module Api::V1
+    class ApiController < ApplicationController
+        # Global Methods
+        
+    end
 end
