@@ -84,4 +84,15 @@ RSpec.describe User, type: :model do
     expect(token2.user).to eq(user)
   end
 
+  it 'should have recipes' do
+    user = create(:user)
+    r = build(:recipe, user: nil)
+    recipe1 = user.recipes.create r.attributes
+    r = build(:recipe, user: nil)
+    recipe2 = user.recipes.create r.attributes
+
+    expect(recipe1.user).to eq(user)
+    expect(recipe2.user).to eq(user)
+  end
+
 end
