@@ -28,3 +28,12 @@ POST example.com/api/v1/users
 }
 ```
 
+### Sign In / Token de acesso
+```
+POST example.com/api/v1/sign_in
+{
+    email; 'email@example.com',
+    password: 'password'
+}
+```
+
