@@ -22,7 +22,7 @@ SABRE é um sistema colaborativo de receitas em desenvolvimento como Trabalho de
 POST example.com/api/v1/users
 {
     username: 'username',
-    email; 'email@example.com',
+    email: 'email@example.com',
     password: 'password',
     password_confirmation: 'password' # não obrigatório
 }
@@ -32,8 +32,20 @@ POST example.com/api/v1/users
 ```
 POST example.com/api/v1/sign_in
 {
-    email; 'email@example.com',
+    email: 'email@example.com',
     password: 'password'
 }
+```
+
+### Enviar receita
+```
+POST example.com/api/v1/users/recipe
+{
+    name: 'name',
+    ingredients: 'ingredients',
+    directions: 'directions'
+}
+
+HEADER 'X-Secure-Token: token'
 ```
 
