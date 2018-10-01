@@ -17,7 +17,7 @@ module Api::V1
     end
 
     def load_user
-      @user = SecureToken.find_by(token: request.headers['X-Secure-Token'])&.user
+      @user = SecureToken.active.find_by(token: request.headers['X-Secure-Token'])&.user
     end
 
   end

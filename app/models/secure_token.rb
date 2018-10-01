@@ -7,6 +7,8 @@ class SecureToken < ApplicationRecord
 
   belongs_to :user
 
+  scope :active, -> { where('expires > ?', Time.now) }
+
   def SecureToken.generate_token
     SecureRandom.urlsafe_base64 TOKEN_LENGTH
   end

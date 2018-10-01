@@ -82,6 +82,22 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(user.recipes.count).to eq(0)
     end
 
+    it 'is not valid with an expired secure token' do
+      user = create(:user)
+      recipe = build(:recipe)
+      token = user.secure_tokens.create expires: 1.minute.ago
+      request.headers['X-Secure-Token'] = token.token
+
+      post :create, params: recipe.attributes
+
+      json = JSON.parse(response.body)
+      expect(json['error']).to_not be_nil
+      expect(json['errors']).to be_nil
+      expect(response.status).to eq(403)
+      expect(Recipe.find_by name: recipe.name).to be_nil
+      expect(user.recipes.count).to eq(0)
+    end
+
   end
 
 end
