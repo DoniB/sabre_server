@@ -19,7 +19,7 @@ SABRE é um sistema colaborativo de receitas em desenvolvimento como Trabalho de
 
 ### Criar usuário
 ```
-POST example.com/api/v1/users
+POST example.com/api/v1/user
 {
     username: 'username',
     email: 'email@example.com',

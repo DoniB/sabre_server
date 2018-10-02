@@ -149,6 +149,17 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(json['id']).to be_nil
     end
 
+    it 'should return a new secure token' do
+      user = build(:user)
+      post :create, params: { username: user.username,
+                              email:    user.email,
+                              password: user.password,
+                              password_confirmation: user.password}
+      json = JSON.parse(response.body)
+      expect(json['token']).to_not be_nil
+      expect(json['expires']).to_not be_nil
+    end
+
   end
 
 end
