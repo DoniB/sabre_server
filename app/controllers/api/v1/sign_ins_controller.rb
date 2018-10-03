@@ -7,7 +7,8 @@ class Api::V1::SignInsController < Api::V1::ApiController
       response = user.as_json(except: user_hidden_fields).merge(token: token.token, expires: token.expires)
       render json: response, status: :created
     else
-      render json: { errors: 'wrong email or password' }
+      render json: { error: 'wrong email or password' },
+             status: :unprocessable_entity
     end
   end
 
