@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resource :user, only: [:create]
+      resource :user, only: [:create, :show]
       resource :sign_in, only: [:create]
 
       namespace :users do

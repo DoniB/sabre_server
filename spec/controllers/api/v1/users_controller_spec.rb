@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::UsersController, type: :controller do
 
-  describe 'POST api/v1/users#create' do
+  describe 'POST api/v1/user#create' do
 
     it 'is valid with attributes' do
       user = build(:user)
@@ -134,6 +134,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(json['email']).to eq(user.email)
       expect(json['created_at']).to_not be_nil
       expect(json['updated_at']).to_not be_nil
+      expect(response.status).to eq(201)
     end
 
     it 'should not return the new user sensitive data' do
@@ -147,6 +148,7 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(json['password_confirmation']).to be_nil
       expect(json['password_digest']).to be_nil
       expect(json['id']).to be_nil
+      expect(response.status).to eq(201)
     end
 
     it 'should return a new secure token' do
@@ -158,6 +160,69 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       json = JSON.parse(response.body)
       expect(json['token']).to_not be_nil
       expect(json['expires']).to_not be_nil
+      expect(response.status).to eq(201)
+    end
+
+  end
+
+  describe 'GET api/v1/user#show' do
+
+    it 'should return user info and token when valid token' do
+      user = create :user
+      token = user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+      get :show
+
+      json = JSON.parse(response.body)
+      expect(json['expires']).to_not be_nil
+      expect(json['token']).to eq(token.token)
+      expect(json['email']).to eq(user.email)
+      expect(json['username']).to eq(user.username)
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not return user sensitive info when valid token' do
+      user = create :user
+      token = user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+      get :show
+
+      json = JSON.parse(response.body)
+      expect(json['password']).to be_nil
+      expect(json['password_confirmation']).to be_nil
+      expect(json['password_digest']).to be_nil
+      expect(json['id']).to be_nil
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not return user info or token when invalid token' do
+      user = create :user
+      token = user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = (token.token + 'abc')
+      get :show
+
+      json = JSON.parse(response.body)
+      expect(json['expires']).to be_nil
+      expect(json['token']).to_not eq(token.token)
+      expect(json['email']).to_not eq(user.email)
+      expect(json['username']).to_not eq(user.username)
+      expect(response.status).to eq(403)
+    end
+
+    it 'should not return user info or token without token' do
+      user = create :user
+
+      get :show
+
+      json = JSON.parse(response.body)
+      expect(json['expires']).to be_nil
+      expect(json['token']).to be_nil
+      expect(json['email']).to_not eq(user.email)
+      expect(json['username']).to_not eq(user.username)
+      expect(response.status).to eq(403)
     end
 
   end

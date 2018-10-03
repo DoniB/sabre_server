@@ -37,6 +37,13 @@ POST example.com/api/v1/sign_in
 }
 ```
 
+### Informações de usuário
+```
+GET example.com/api/v1/user
+
+HEADER 'X-Secure-Token: token'
+```
+
 ### Enviar receita
 ```
 POST example.com/api/v1/users/recipe
