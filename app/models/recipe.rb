@@ -3,4 +3,6 @@ class Recipe < ApplicationRecord
 
   belongs_to :user
 
+  scope :active, -> { where('is_admin = ?', true) }
+
 end

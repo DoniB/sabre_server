@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'recipe_status'
 
 RSpec.describe Api::V1::Users::RecipeController, type: :controller do
 
@@ -19,6 +20,20 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(response.status).to eq(201)
       expect(Recipe.find_by name: recipe.name).to_not be_nil
       expect(user.recipes.count).to eq(1)
+    end
+
+    it 'create with WAITING_ACTIVATION status by default' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = build(:recipe)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      post :create, params: recipe.attributes
+
+      json = JSON.parse(response.body)
+      expect(json['status']).to eq(RecipeStatus::WAITING_ACTIVATION)
+      expect(Recipe.find_by(name: recipe.name).status).to eq(RecipeStatus::WAITING_ACTIVATION)
     end
 
     it 'is not valid without name attribute' do

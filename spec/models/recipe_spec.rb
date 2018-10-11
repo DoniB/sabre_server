@@ -1,8 +1,13 @@
 require 'rails_helper'
+require 'recipe_status'
 
 RSpec.describe Recipe, type: :model do
   it 'has valid factory' do
     expect(create(:recipe)).to be_valid
+  end
+
+  it 'create with WAITING_ACTIVATION status by default' do
+    expect(create(:recipe).status).to eq(RecipeStatus::WAITING_ACTIVATION)
   end
 
   it 'is not valid without the ingredients' do
