@@ -225,6 +225,34 @@ RSpec.describe Api::V1::UsersController, type: :controller do
       expect(response.status).to eq(403)
     end
 
+    it 'do not create admin by default' do
+      user = build(:user)
+      post :create, params: { username: user.username,
+                              email:    user.email,
+                              password: user.password }
+      json = JSON.parse(response.body)
+      expect(json['errors']).to be_nil
+      expect(response.status).to eq(201)
+      expect(json['is_admin']).to eq(false)
+      expect(User.find_by(email: user.email).is_admin?).to_not be_truthy
+    end
+
+    it 'should return is_admin:true for admin' do
+      user = create :admin
+      token = user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+      get :show
+
+      json = JSON.parse(response.body)
+      expect(json['password']).to be_nil
+      expect(json['password_confirmation']).to be_nil
+      expect(json['password_digest']).to be_nil
+      expect(json['id']).to be_nil
+      expect(json['is_admin']).to eq(true)
+      expect(response.status).to eq(200)
+    end
+
   end
 
 end

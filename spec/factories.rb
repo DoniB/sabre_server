@@ -22,4 +22,11 @@ FactoryBot.define do
     password { Faker::Internet.password }
   end
 
+  factory :admin, class: User do
+    username { Faker::Name.name }
+    email { Faker::Internet.unique.email }
+    password { Faker::Internet.password }
+    is_admin { true }
+  end
+
 end
