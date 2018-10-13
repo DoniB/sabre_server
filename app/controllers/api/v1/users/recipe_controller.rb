@@ -1,8 +1,9 @@
 class Api::V1::Users::RecipeController < Api::V1::ApiController
   before_action :require_authentication!
+  before_action :set_recipe, only: [:update]
 
   def create
-    recipe = @user.recipes.build params.permit(:ingredients, :name, :directions)
+    recipe = @user.recipes.build recipe_params
 
     if recipe.save
       render json: recipe, status: :created
@@ -10,6 +11,29 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
       render json: { errors: recipe.errors},
              status: :unprocessable_entity
     end
+  end
+
+  def update
+    if @recipe.update recipe_params
+      render json: @recipe, status: :accepted
+    else
+      render json: @recipe.errors, status: :unprocessable_entity
+    end
+  end
+
+
+private
+
+  def set_recipe
+    @recipe = Recipe.find params[:id]
+  end
+
+  def recipe_params
+    permit =  [ :ingredients, :name, :directions ]
+    if @user.is_admin?
+      permit << :status
+    end
+    params.permit(permit)
   end
 
 end

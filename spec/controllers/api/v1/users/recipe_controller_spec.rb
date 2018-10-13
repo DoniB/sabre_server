@@ -115,4 +115,90 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
 
   end
 
+  describe 'PATCH api/v1/users/recipe#update' do
+
+    it 'should update ingredients' do
+      recipe = create(:recipe)
+      token = recipe.user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      ingredients = 'Updated ' + recipe.ingredients
+      patch :update, params: { id: recipe.id, ingredients: ingredients }
+
+      json = JSON.parse(response.body)
+
+      expect(json['ingredients']).to eq(ingredients)
+      expect(response.status).to eq(202)
+      expect(Recipe.find(recipe.id).ingredients).to eq(ingredients)
+    end
+
+    it 'should update name' do
+      recipe = create(:recipe)
+      token = recipe.user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      name = 'Updated ' + recipe.name
+      patch :update, params: { id: recipe.id, name: name }
+
+      json = JSON.parse(response.body)
+
+      expect(json['name']).to eq(name)
+      expect(response.status).to eq(202)
+      expect(Recipe.find(recipe.id).name).to eq(name)
+    end
+
+    it 'should update directions' do
+      recipe = create(:recipe)
+      token = recipe.user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      directions = 'Updated ' + recipe.directions
+      patch :update, params: { id: recipe.id, directions: directions }
+
+      json = JSON.parse(response.body)
+
+      expect(json['directions']).to eq(directions)
+      expect(response.status).to eq(202)
+      expect(Recipe.find(recipe.id).directions).to eq(directions)
+    end
+
+    it 'should not update status to ACTIVE whit normal user' do
+      recipe = create(:recipe)
+      token = recipe.user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      patch :update, params: { id: recipe.id, status: RecipeStatus::ACTIVE }
+
+      json = JSON.parse(response.body)
+
+      expect(json['status']).to_not eq(RecipeStatus::ACTIVE)
+      expect(json['status']).to eq(RecipeStatus::WAITING_ACTIVATION)
+      expect(response.status).to eq(202)
+      expect(Recipe.find(recipe.id).status).to_not eq(RecipeStatus::ACTIVE)
+    end
+
+    it 'should update status to ACTIVE whit admin user' do
+      recipe = create(:recipe)
+      user = recipe.user
+      token = user.secure_tokens.create
+      user.is_admin = true
+      user.save
+
+      request.headers['X-Secure-Token'] = token.token
+
+      patch :update, params: { id: recipe.id, status: RecipeStatus::ACTIVE }
+
+      json = JSON.parse(response.body)
+
+      expect(json['status']).to eq(RecipeStatus::ACTIVE)
+      expect(response.status).to eq(202)
+      expect(Recipe.find(recipe.id).status).to eq(RecipeStatus::ACTIVE)
+    end
+
+  end
+
 end
