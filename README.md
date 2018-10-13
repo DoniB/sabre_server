@@ -56,3 +56,17 @@ POST example.com/api/v1/users/recipe
 HEADER 'X-Secure-Token: token'
 ```
 
+### Atualizar receita
+```
+PATCH example.com/api/v1/users/recipe/:id
+{
+    name: 'name',
+    ingredients: 'ingredients',
+    directions: 'directions',
+    status: status_number
+}
+
+HEADER 'X-Secure-Token: token'
+
+status só será aceito por usuários administrativos
+```
