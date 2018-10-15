@@ -133,6 +133,22 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(Recipe.find(recipe.id).ingredients).to eq(ingredients)
     end
 
+    it 'should not update another user recipe' do
+      recipe = create(:recipe)
+      token = create(:user).secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      ingredients = 'Updated ' + recipe.ingredients
+      patch :update, params: { id: recipe.id, ingredients: ingredients }
+
+      json = JSON.parse(response.body)
+
+      expect(json['ingredients']).to_not eq(ingredients)
+      expect(response.status).to eq(403)
+      expect(Recipe.find(recipe.id).ingredients).to_not eq(ingredients)
+    end
+
     it 'should update name' do
       recipe = create(:recipe)
       token = recipe.user.secure_tokens.create

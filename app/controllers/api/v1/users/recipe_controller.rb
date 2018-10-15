@@ -18,6 +18,10 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
   end
 
   def update
+    unless can_edit? @recipe
+      return render json: { error: 'You are not allowed to edit this recipe'}, status: :forbidden
+    end
+
     if @recipe.update(recipe_params)
       render json: @recipe, status: :accepted
     else
@@ -43,6 +47,11 @@ private
   def query_recipe
     return Recipe.waiting_activation if (params['status'] == 'waiting_activation') && @user.is_admin?
     @user.recipes
+  end
+
+  def can_edit?(recipe)
+    return true if(recipe.user.id == @user.id) || @user.is_admin?
+    false
   end
 
 end
