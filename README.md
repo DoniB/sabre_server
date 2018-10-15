@@ -69,4 +69,20 @@ PATCH example.com/api/v1/users/recipe/:id
 HEADER 'X-Secure-Token: token'
 
 status só será aceito por usuários administrativos
+administradores podem editar receitas de qualquer usuário
+```
+
+### Listar receita
+```
+GET example.com/api/v1/users/recipe
+{
+    name: 'name',
+    ingredients: 'ingredients',
+    directions: 'directions'
+}
+
+HEADER 'X-Secure-Token: token'
+
+retorna receitas do usuário
+se '?status=waiting_activation' retorna todas as receitas pendentes de ativação, de todos os usuários (tem que ser administrador)
 ```

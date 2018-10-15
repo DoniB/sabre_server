@@ -7,7 +7,7 @@ Rails.application.routes.draw do
       resource :sign_in, only: [:create]
 
       namespace :users do
-        resources :recipe, only: [:create, :update]
+        resources :recipe, only: [:create, :update, :index]
       end
     end
   end

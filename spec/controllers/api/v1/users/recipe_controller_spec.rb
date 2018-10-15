@@ -201,4 +201,74 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
 
   end
 
+  describe 'GET api/v1/users/recipe#index' do
+
+    it 'should returns the user`s recipes' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      4.times { create(:recipe, user: user) }
+      expect(user.recipes.count).to eq(4)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :index
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(4)
+      json.each do |i|
+        expect(i['user_id']).to eq(user.id)
+      end
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not return another user`s recipes' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      4.times { create(:recipe) }
+      expect(user.recipes.count).to eq(0)
+      expect(Recipe.count).to eq(4)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :index
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(0)
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not return another user`s recipes waiting activation when not admin' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      4.times { create(:recipe, status: RecipeStatus::WAITING_ACTIVATION) }
+      expect(user.recipes.count).to eq(0)
+      expect(Recipe.count).to eq(4)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :index, params: { status: 'waiting_activation' }
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(0)
+      expect(response.status).to eq(200)
+    end
+
+    it 'should return another user recipes waiting activation when admin' do
+      user = create(:admin)
+      token = user.secure_tokens.create
+      4.times { create(:recipe, status: RecipeStatus::WAITING_ACTIVATION) }
+      expect(user.recipes.count).to eq(0)
+      expect(Recipe.count).to eq(4)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :index, params: { status: 'waiting_activation' }
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(4)
+      expect(response.status).to eq(200)
+    end
+
+  end
+
 end
