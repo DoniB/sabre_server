@@ -1,9 +1,13 @@
 class Api::V1::Users::RecipeController < Api::V1::ApiController
-  before_action :require_authentication!
-  before_action :set_recipe, only: [:update]
+  before_action :require_authentication!, except: [:show]
+  before_action :set_recipe, only: [:update, :show]
 
   def index
     render json: query_recipe
+  end
+
+  def show
+    render json: @recipe
   end
 
   def create
