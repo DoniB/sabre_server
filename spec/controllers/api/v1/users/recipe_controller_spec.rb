@@ -287,4 +287,86 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
 
   end
 
+  describe 'GET api/v2/users/recipe#show' do
+
+    it 'should returns the user`s recipes' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = create(:recipe, user: user)
+      expect(user.recipes.count).to eq(1)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :show, params: { id: recipe.id }
+
+      json = JSON.parse(response.body)
+      expect(json['user_id']).to eq(user.id)
+      expect(json['name']).to eq(recipe.name)
+      expect(json['ingredients']).to eq(recipe.ingredients)
+      expect(json['directions']).to eq(recipe.directions)
+      expect(json['status']).to eq(recipe.status)
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not return another user`s recipes' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      expect(user.recipes.count).to eq(0)
+      expect(Recipe.count).to eq(1)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :show, params: { id: recipe.id }
+
+      json = JSON.parse(response.body)
+      expect(json['user_id']).to be_nil
+      expect(json['name']).to be_nil
+      expect(json['ingredients']).to be_nil
+      expect(json['directions']).to be_nil
+      expect(json['status']).to be_nil
+      expect(response.status).to eq(403)
+    end
+
+    it 'should not return another user`s recipes waiting activation when not admin' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
+      expect(user.recipes.count).to eq(0)
+      expect(Recipe.count).to eq(1)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :show, params: { id: recipe.id }
+
+      json = JSON.parse(response.body)
+      expect(json['user_id']).to be_nil
+      expect(json['name']).to be_nil
+      expect(json['ingredients']).to be_nil
+      expect(json['directions']).to be_nil
+      expect(json['status']).to be_nil
+      expect(response.status).to eq(403)
+    end
+
+    it 'should return another user recipes waiting activation when admin' do
+      user = create(:admin)
+      token = user.secure_tokens.create
+      recipe = create(:recipe)
+      expect(user.recipes.count).to eq(0)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :show, params: { id: recipe.id }
+
+      json = JSON.parse(response.body)
+      expect(json['user_id']).to_not eq(user.id)
+      expect(json['name']).to eq(recipe.name)
+      expect(json['ingredients']).to eq(recipe.ingredients)
+      expect(json['directions']).to eq(recipe.directions)
+      expect(json['status']).to eq(recipe.status)
+      expect(response.status).to eq(200)
+    end
+
+  end
+
 end

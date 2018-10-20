@@ -9,6 +9,9 @@ Rails.application.routes.draw do
       namespace :users do
         resources :recipe, only: [:create, :update, :index, :show]
       end
+
+      resources :recipes, only: [:index]
+
     end
   end
 

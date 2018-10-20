@@ -5,7 +5,7 @@ class Recipe < ApplicationRecord
 
   belongs_to :user
 
-  scope :active, -> { where('is_admin = ?', true) }
+  scope :active, -> { where('status = ?', RecipeStatus::ACTIVE) }
   scope :waiting_activation, -> { where('status = ?', RecipeStatus::WAITING_ACTIVATION) }
 
 end

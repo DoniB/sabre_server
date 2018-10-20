@@ -1,5 +1,5 @@
 class Api::V1::Users::RecipeController < Api::V1::ApiController
-  before_action :require_authentication!, except: [:show]
+  before_action :require_authentication!
   before_action :set_recipe, only: [:update, :show]
 
   def index
@@ -7,6 +7,9 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
   end
 
   def show
+    unless can_edit? @recipe
+      return render json: { error: 'You are not allowed to edit this recipe'}, status: :forbidden
+    end
     render json: @recipe
   end
 
