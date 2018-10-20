@@ -40,6 +40,44 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
       expect(json.size).to eq(0)
     end
 
+    it 'is paginated' do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
+
+      get :index, params: { page: 0}
+      json = JSON.parse(response.body)
+      expect(json[0]['id']).to eq(recipe.id)
+      expect(json.size).to eq(20)
+      recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
+      19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
+
+      get :index, params: { page: 1}
+      json = JSON.parse(response.body)
+      expect(json[0]['id']).to eq(recipe2.id)
+      expect(recipe.id).to_not eq(recipe2.id)
+      expect(json.size).to eq(20)
+      expect(Recipe.count).to eq(40)
+    end
+
+    it 'has default value paginated' do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
+
+      get :index
+      json = JSON.parse(response.body)
+      expect(json[0]['id']).to eq(recipe.id)
+      expect(json.size).to eq(20)
+      recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
+      19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
+
+      get :index, params: { page: 1}
+      json = JSON.parse(response.body)
+      expect(json[0]['id']).to eq(recipe2.id)
+      expect(recipe.id).to_not eq(recipe2.id)
+      expect(json.size).to eq(20)
+      expect(Recipe.count).to eq(40)
+    end
+
   end
 
 end

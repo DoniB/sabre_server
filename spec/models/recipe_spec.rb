@@ -30,4 +30,24 @@ RSpec.describe Recipe, type: :model do
     expect(recipe).to_not be_valid
   end
 
+  it 'is paginated' do
+    recipe = create(:recipe)
+    19.times { create(:recipe, user: recipe.user) }
+    expect(Recipe.page(0).first.id).to eq(recipe.id)
+    recipe2 = create(:recipe)
+    19.times { create(:recipe, user: recipe.user) }
+    expect(Recipe.page(1).first.id).to eq(recipe2.id)
+    expect(recipe.id).to_not eq(recipe2.id)
+  end
+
+  it 'has default value paginated' do
+    recipe = create(:recipe)
+    19.times { create(:recipe, user: recipe.user) }
+    expect(Recipe.page.first.id).to eq(recipe.id)
+    recipe2 = create(:recipe)
+    19.times { create(:recipe, user: recipe.user) }
+    expect(Recipe.page(1).first.id).to eq(recipe2.id)
+    expect(recipe.id).to_not eq(recipe2.id)
+  end
+
 end
