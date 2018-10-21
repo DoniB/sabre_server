@@ -10,7 +10,7 @@ Rails.application.routes.draw do
         resources :recipe, only: [:create, :update, :index, :show]
       end
 
-      resources :recipes, only: [:index]
+      resources :recipes, only: [:index, :show]
 
     end
   end

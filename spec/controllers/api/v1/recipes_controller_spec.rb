@@ -70,12 +70,59 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
       recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
       19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
 
-      get :index, params: { page: 1}
+      get :index, params: { page: 1 }
       json = JSON.parse(response.body)
       expect(json[0]['id']).to eq(recipe2.id)
       expect(recipe.id).to_not eq(recipe2.id)
       expect(json.size).to eq(20)
       expect(Recipe.count).to eq(40)
+    end
+
+  end
+
+  describe 'GET api/v1/recipes#show' do
+
+    it 'returns active recipes' do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      get :show, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json['id']).to eq(recipe.id)
+
+      recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
+      get :show, params: { id: recipe2.id }
+      json = JSON.parse(response.body)
+      expect(json['id']).to eq(recipe2.id)
+
+      expect(recipe.id).to_not eq(recipe2.id)
+    end
+
+    it 'do not returns recipes waiting activation' do
+      recipe = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
+      get :show, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_truthy
+      expect(response.status).to eq(404)
+
+      recipe2 = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
+      get :show, params: { id: recipe2.id }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_truthy
+      expect(response.status).to eq(404)
+
+      expect(recipe.id).to_not eq(recipe2.id)
+    end
+
+    it 'do not returns any recipe when an invalid id is requested' do
+      get :show, params: { id: 0 }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_truthy
+      expect(response.status).to eq(404)
+
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      get :show, params: { id: recipe.id + 1 }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_truthy
+      expect(response.status).to eq(404)
     end
 
   end
