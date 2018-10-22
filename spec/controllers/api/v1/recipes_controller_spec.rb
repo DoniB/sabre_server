@@ -78,6 +78,34 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
       expect(Recipe.count).to eq(40)
     end
 
+    it 'filter recipes by query' do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE, name: 'receitas caseiras', ingredients: 'bananas maçãs')
+      get :index, params: { q: 'receita' }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(1)
+      expect(json[0]['id']).to eq(recipe.id)
+
+      recipe2 = create(:recipe, status: RecipeStatus::ACTIVE, name: 'receita caseira', ingredients: 'uvas peras')
+      get :index, params: { q: 'receita' }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(2)
+      expect(json[0]['id']).to eq(recipe.id)
+      expect(json[1]['id']).to eq(recipe2.id)
+
+      get :index, params: { q: 'receitas' }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(2)
+      expect(json[0]['id']).to eq(recipe.id)
+      expect(json[1]['id']).to eq(recipe2.id)
+
+      get :index, params: { q: 'banana' }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(1)
+      expect(json[0]['id']).to eq(recipe.id)
+
+      expect(recipe.id).to_not eq(recipe2.id)
+    end
+
   end
 
   describe 'GET api/v1/recipes#show' do

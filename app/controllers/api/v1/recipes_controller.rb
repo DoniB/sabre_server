@@ -3,7 +3,7 @@ class Api::V1::RecipesController < Api::V1::ApiController
   before_action :set_recipe, only: [:show]
 
   def index
-    render json: Recipe.active.page(page)
+    render json: get_recipes
   end
 
   def show
@@ -14,6 +14,11 @@ class Api::V1::RecipesController < Api::V1::ApiController
   end
 
   private
+
+  def get_recipes
+    return Recipe.active.page(page) if params[:q].nil?
+    Recipe.active.search(params[:q]).page(page)
+  end
 
   def page
     params['page']&.to_i || 0
