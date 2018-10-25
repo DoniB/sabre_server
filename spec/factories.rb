@@ -2,6 +2,12 @@ require 'faker'
 
 FactoryBot.define do
 
+  factory :comment do
+    text { Faker::GameOfThrones.quote }
+    user { create(:user) }
+    recipe { create(:recipe) }
+  end
+
   factory :recipe do
     name { Faker::Food.dish }
     ingredients { Faker::Food.ingredient + "\n" +
