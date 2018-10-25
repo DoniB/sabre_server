@@ -7,6 +7,7 @@ class Recipe < ApplicationRecord
   PAGE_LIMIT = 20
 
   belongs_to :user
+  has_many :comments
 
   default_scope -> { order(id: :asc) }
 

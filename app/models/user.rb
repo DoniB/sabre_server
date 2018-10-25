@@ -10,6 +10,7 @@ class User < ApplicationRecord
 
   has_many :secure_tokens
   has_many :recipes
+  has_many :comments
 
   scope :admins, -> { where('is_admin = ?', true) }
 

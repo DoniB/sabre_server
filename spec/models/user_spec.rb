@@ -95,4 +95,24 @@ RSpec.describe User, type: :model do
     expect(recipe2.user).to eq(user)
   end
 
+  it 'should have comment' do
+    user = create(:user)
+    c = create(:comment, user: user)
+
+    expect(Comment.count).to eq(1)
+    expect(Recipe.count).to eq(1)
+    expect(User.count).to eq(2)
+    expect(c.user.id).to eq(user.id)
+
+    c = create(:comment, user: user, recipe: c.recipe)
+
+    expect(Comment.count).to eq(2)
+    expect(user.comments.count).to eq(2)
+    expect(Recipe.count).to eq(1)
+    expect(User.count).to eq(2)
+    expect(c.user.id).to eq(user.id)
+    expect(Comment.first.user.id).to eq(user.id)
+    expect(Comment.last.user.id).to eq(user.id)
+  end
+
 end
