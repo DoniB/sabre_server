@@ -97,4 +97,54 @@ RSpec.describe Api::V1::CommentsController, type: :request do
 
   end
 
+  describe 'GET api/v1/recipes/:recipe_id/comments#index' do
+
+    it 'returns recipe comments' do
+      recipe = create(:recipe)
+      comment = create(:comment, recipe: recipe)
+
+      expect(recipe.comments.count).to eq(1)
+
+      get "/api/v1/recipes/#{recipe.id}/comments"
+
+      json = JSON.parse(response.body)
+      expect(json[0]['text']).to eq(comment.text)
+      expect(json[0]['recipe_id']).to eq(recipe.id)
+      expect(response.status).to eq(200)
+      expect(json[0]['text']).to eq(comment.text)
+      expect(json.size).to eq(1)
+
+      create(:comment, recipe: recipe)
+      get "/api/v1/recipes/#{recipe.id}/comments"
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(2)
+    end
+
+    it 'should returns empty json for no comment' do
+      recipe = create(:recipe)
+
+      expect(recipe.comments.count).to eq(0)
+
+      get "/api/v1/recipes/#{recipe.id}/comments"
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(0)
+    end
+
+    it 'should not return other recipes comments' do
+      recipe = create(:recipe)
+      recipe2 = create(:recipe)
+      create(:comment, recipe: recipe)
+
+      expect(recipe.comments.count).to eq(1)
+      expect(recipe2.comments.count).to eq(0)
+
+      get "/api/v1/recipes/#{recipe2.id}/comments"
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(0)
+    end
+
+  end
+
 end

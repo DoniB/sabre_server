@@ -11,7 +11,7 @@ Rails.application.routes.draw do
       end
 
       resources :recipes, only: [:index, :show] do
-        resources :comments, only: [:create]
+        resources :comments, only: [:index, :create]
       end
 
     end

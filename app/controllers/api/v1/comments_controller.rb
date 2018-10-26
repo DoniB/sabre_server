@@ -1,6 +1,10 @@
 class Api::V1::CommentsController < Api::V1::ApiController
-  before_action :require_authentication!
+  before_action :require_authentication!, only: [:create]
   before_action :set_recipe
+
+  def index
+    render json: @recipe.comments
+  end
 
   def create
     comment = @user.comments.build recipe: @recipe, text: params[:text]
