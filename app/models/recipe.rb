@@ -28,4 +28,10 @@ class Recipe < ApplicationRecord
     }
   )
 
+  def as_json(options = {})
+    super(options).merge({
+      owner: user.username
+    })
+  end
+
 end

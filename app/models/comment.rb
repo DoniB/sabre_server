@@ -5,4 +5,10 @@ class Comment < ApplicationRecord
   belongs_to :user
   belongs_to :recipe
 
+  def as_json(options = {})
+    super(options).merge({
+        username: user.username
+    })
+  end
+
 end
