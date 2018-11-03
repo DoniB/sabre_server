@@ -95,6 +95,25 @@ RSpec.describe Api::V1::RatingsController, type: :request do
       expect(user.ratings.count).to eq(1)
     end
 
+    it 'should update if exists' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      rating = create(:rating, user: user, stars: 1)
+
+      expect(user.ratings.count).to eq(1)
+
+      post "/api/v1/recipes/#{rating.recipe_id}/rating", { params: {stars: 5}, headers: {
+          'X-Secure-Token': token.token
+      }}
+
+      json = JSON.parse(response.body)
+      expect(json['stars']).to eq(5)
+      expect(json['user_id']).to eq(user.id)
+      expect(json['recipe_id']).to eq(rating.recipe_id)
+      expect(response.status).to eq(201)
+      expect(user.ratings.count).to eq(1)
+    end
+
   end
 
   describe 'GET api/v1/recipes/:recipe_id/ratings#show' do
