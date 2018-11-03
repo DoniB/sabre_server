@@ -115,4 +115,24 @@ RSpec.describe User, type: :model do
     expect(Comment.last.user.id).to eq(user.id)
   end
 
+  it 'has ratings' do
+    user = create(:user)
+    expect(user.ratings.count).to eq(0)
+
+    rating = create(:rating, user: user)
+    expect(Rating.count).to eq(1)
+    expect(user.ratings.count).to eq(1)
+    expect(user.ratings.first.id).to eq(rating.id)
+
+    create(:rating)
+    expect(Rating.count).to eq(2)
+    expect(user.ratings.count).to eq(1)
+    expect(user.ratings.first.id).to eq(rating.id)
+
+    rating = build(:rating, user: user)
+    user.ratings.create(stars: rating.stars, recipe: rating.recipe).id
+    expect(Rating.count).to eq(3)
+    expect(user.ratings.count).to eq(2)
+  end
+
 end

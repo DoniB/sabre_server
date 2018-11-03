@@ -30,6 +30,26 @@ RSpec.describe Recipe, type: :model do
     expect(recipe).to_not be_valid
   end
 
+  it 'has ratings' do
+    recipe = create(:recipe)
+    expect(recipe.ratings.count).to eq(0)
+
+    rating = create(:rating, recipe: recipe)
+    expect(Rating.count).to eq(1)
+    expect(recipe.ratings.count).to eq(1)
+    expect(recipe.ratings.first.id).to eq(rating.id)
+
+    create(:rating)
+    expect(Rating.count).to eq(2)
+    expect(recipe.ratings.count).to eq(1)
+    expect(recipe.ratings.first.id).to eq(rating.id)
+
+    rating = build(:rating, recipe: recipe)
+    recipe.ratings.create(stars: rating.stars, user: rating.user).id
+    expect(Rating.count).to eq(3)
+    expect(recipe.ratings.count).to eq(2)
+  end
+
   it 'is paginated' do
     recipe = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }

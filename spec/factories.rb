@@ -2,6 +2,12 @@ require 'faker'
 
 FactoryBot.define do
 
+  factory :rating do
+    stars { Faker::Number.between 0, 5 }
+    user  { create(:user) }
+    recipe { create(:recipe) }
+  end
+
   factory :comment do
     text { Faker::GameOfThrones.quote }
     user { create(:user) }

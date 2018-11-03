@@ -8,6 +8,7 @@ class Recipe < ApplicationRecord
 
   belongs_to :user
   has_many :comments
+  has_many :ratings
 
   default_scope -> { order(id: :asc) }
 
