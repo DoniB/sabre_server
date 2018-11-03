@@ -42,4 +42,11 @@ RSpec.describe Rating, type: :model do
     expect(rating.recipe).to_not be_nil
   end
 
+  it 'should should create only one rating with the same recipe and user' do
+    rating = create(:rating)
+    expect(rating).to be_valid
+    rating2 = build(:rating, recipe: rating.recipe, user: rating.user)
+    expect(rating2).to_not be_valid
+  end
+
 end
