@@ -64,6 +64,29 @@ RSpec.describe Recipe, type: :model do
     expect(recipe).to_not be_valid
   end
 
+  it 'has average_stars recalculated' do
+    recipe = create(:recipe)
+    expect(recipe.average_stars).to eq(0)
+
+    expect(recipe.ratings.count).to eq(0)
+
+    rating = create(:rating, recipe: recipe, stars: 2)
+    expect(recipe.ratings.count).to eq(1)
+    expect(recipe.reload.average_stars).to eq(2)
+
+    rating2 = create(:rating, recipe: recipe, stars: 4)
+    expect(recipe.ratings.count).to eq(2)
+    expect(recipe.reload.average_stars).to eq(3)
+
+    rating.stars = 5
+    rating.save
+    expect(recipe.reload.average_stars).to eq(4)
+
+    rating2.destroy
+    expect(recipe.ratings.count).to eq(1)
+    expect(recipe.reload.average_stars).to eq(5)
+  end
+
   it 'is paginated' do
     recipe = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }

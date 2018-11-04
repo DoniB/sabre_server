@@ -38,4 +38,9 @@ class Recipe < ApplicationRecord
     })
   end
 
+  def update_average_stars
+    self.average_stars =  ratings.average(:stars).to_i
+    save
+  end
+
 end
