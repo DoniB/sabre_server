@@ -4,6 +4,9 @@ class Recipe < ApplicationRecord
   include PgSearch
 
   validates :ingredients, :name, :directions, presence: true
+  validates :average_stars, numericality: { only_integer:             true,
+                                            greater_than_or_equal_to: 0,
+                                            less_than_or_equal_to:    5 }
   PAGE_LIMIT = 20
 
   belongs_to :user

@@ -124,6 +124,20 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
       expect(recipe.id).to_not eq(recipe2.id)
     end
 
+    it 'returns average_stars' do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      get :show, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json['id']).to eq(recipe.id)
+      expect(json['average_stars']).to eq(0)
+
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE, average_stars: 5)
+      get :show, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json['id']).to eq(recipe.id)
+      expect(json['average_stars']).to eq(5)
+    end
+
     it 'do not returns recipes waiting activation' do
       recipe = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
       get :show, params: { id: recipe.id }

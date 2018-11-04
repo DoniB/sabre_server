@@ -50,6 +50,20 @@ RSpec.describe Recipe, type: :model do
     expect(recipe.ratings.count).to eq(2)
   end
 
+  it 'has average stars' do
+    recipe = create(:recipe)
+    expect(recipe.average_stars).to eq(0)
+
+    recipe = create(:recipe, average_stars: 5)
+    expect(recipe.average_stars).to eq(5)
+
+    recipe = build(:recipe, average_stars: -1)
+    expect(recipe).to_not be_valid
+
+    recipe = build(:recipe, average_stars: -1)
+    expect(recipe).to_not be_valid
+  end
+
   it 'is paginated' do
     recipe = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }

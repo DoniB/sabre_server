@@ -22,6 +22,19 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(user.recipes.count).to eq(1)
     end
 
+    it 'should not set average_stars' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = build(:recipe, average_stars: 5)
+
+      request.headers['X-Secure-Token'] = token.token
+
+      post :create, params: recipe.attributes
+
+      json = JSON.parse(response.body)
+      expect(json['average_stars']).to eq(0)
+    end
+
     it 'create with WAITING_ACTIVATION status by default' do
       user = create(:user)
       token = user.secure_tokens.create
@@ -131,6 +144,22 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(json['ingredients']).to eq(ingredients)
       expect(response.status).to eq(202)
       expect(Recipe.find(recipe.id).ingredients).to eq(ingredients)
+    end
+
+    it 'should not change average_stars' do
+      recipe = create(:recipe, average_stars: 5)
+      token = recipe.user.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      ingredients = 'Updated ' + recipe.ingredients
+      patch :update, params: { id: recipe.id, ingredients: ingredients, average_stars: 4 }
+
+      json = JSON.parse(response.body)
+
+      expect(json['average_stars']).to_not eq(4)
+      expect(json['average_stars']).to eq(5)
+      expect(response.status).to eq(202)
     end
 
     it 'should not update another user recipe' do
