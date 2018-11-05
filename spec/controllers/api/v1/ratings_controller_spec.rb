@@ -114,6 +114,22 @@ RSpec.describe Api::V1::RatingsController, type: :request do
       expect(user.ratings.count).to eq(1)
     end
 
+    it 'update recipe average_stars' do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = create(:recipe)
+      rating = build(:rating, user: user, recipe: recipe, stars: 4)
+
+      expect(user.ratings.count).to eq(0)
+
+      post "/api/v1/recipes/#{rating.recipe_id}/rating", { params: {stars: rating.stars}, headers: {
+          'X-Secure-Token': token.token
+      }}
+
+      expect(user.ratings.count).to eq(1)
+      expect(recipe.reload.average_stars).to eq(4)
+    end
+
   end
 
   describe 'GET api/v1/recipes/:recipe_id/ratings#show' do
