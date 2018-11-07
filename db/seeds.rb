@@ -16,3 +16,11 @@ if Recipe.count == 0
   10.times { FactoryBot::create :recipe, status: RecipeStatus::PAUSED }
 end
 
+if Category.count == 0
+  [
+      'Bolos e Tortas', 'Carnes', 'Aves', 'Peixes e Frutos do Mar', 'Saladas e Molhos',
+      'Sopas', 'Massas', 'Bebidas', 'Doces e Sobremesas', 'Lances', 'Alimentação Saudável'
+  ].each do |c|
+    Category.create name: c
+  end
+end
