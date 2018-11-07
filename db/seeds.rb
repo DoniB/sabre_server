@@ -19,7 +19,7 @@ end
 if Category.count == 0
   [
       'Bolos e Tortas', 'Carnes', 'Aves', 'Peixes e Frutos do Mar', 'Saladas e Molhos',
-      'Sopas', 'Massas', 'Bebidas', 'Doces e Sobremesas', 'Lances', 'Alimentação Saudável'
+      'Sopas', 'Massas', 'Bebidas', 'Doces e Sobremesas', 'Lanches', 'Alimentação Saudável'
   ].each do |c|
     Category.create name: c
   end
