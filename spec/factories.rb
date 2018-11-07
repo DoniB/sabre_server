@@ -26,6 +26,7 @@ FactoryBot.define do
                   Faker::Food.ingredient + "\n"}
     directions { Faker::Food.description }
     user { create(:user) }
+    category { Category.count == 0 ? create(:category) : Category.all.sample }
   end
 
   factory :secure_token do

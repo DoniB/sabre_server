@@ -44,7 +44,7 @@ private
   end
 
   def recipe_params
-    permit =  [ :ingredients, :name, :directions ]
+    permit =  [ :ingredients, :name, :directions, :category_id ]
     if @user.is_admin?
       permit << :status
     end

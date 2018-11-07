@@ -30,6 +30,11 @@ RSpec.describe Recipe, type: :model do
     expect(recipe).to_not be_valid
   end
 
+  it 'is not valid without the category' do
+    recipe = build(:recipe, category: nil)
+    expect(recipe).to_not be_valid
+  end
+
   it 'has ratings' do
     recipe = create(:recipe)
     expect(recipe.ratings.count).to eq(0)

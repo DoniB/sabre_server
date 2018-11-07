@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_07_015932) do
+ActiveRecord::Schema.define(version: 2018_11_07_022226) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,8 @@ ActiveRecord::Schema.define(version: 2018_11_07_015932) do
     t.datetime "updated_at", null: false
     t.integer "status", limit: 2, default: 0
     t.integer "average_stars", default: 0
+    t.bigint "category_id"
+    t.index ["category_id"], name: "index_recipes_on_category_id"
     t.index ["user_id"], name: "index_recipes_on_user_id"
   end
 
@@ -71,4 +73,5 @@ ActiveRecord::Schema.define(version: 2018_11_07_015932) do
     t.boolean "is_admin", default: false
   end
 
+  add_foreign_key "recipes", "categories"
 end

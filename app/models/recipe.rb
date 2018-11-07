@@ -10,6 +10,7 @@ class Recipe < ApplicationRecord
   PAGE_LIMIT = 20
 
   belongs_to :user
+  belongs_to :category
   has_many :comments
   has_many :ratings
 
