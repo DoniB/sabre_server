@@ -2,6 +2,10 @@ require 'faker'
 
 FactoryBot.define do
 
+  factory :category do
+    name { Faker::Book.genre }
+  end
+
   factory :rating do
     stars { Faker::Number.between 0, 5 }
     user  { create(:user) }
