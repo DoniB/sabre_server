@@ -95,20 +95,22 @@ RSpec.describe Recipe, type: :model do
   it 'is paginated' do
     recipe = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }
-    expect(Recipe.page(0).first.id).to eq(recipe.id)
+    expect(Recipe.page(0).last.id).to eq(recipe.id)
     recipe2 = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }
-    expect(Recipe.page(1).first.id).to eq(recipe2.id)
+    expect(Recipe.page(0).last.id).to eq(recipe2.id)
+    expect(Recipe.page(1).last.id).to eq(recipe.id)
     expect(recipe.id).to_not eq(recipe2.id)
   end
 
   it 'has default value paginated' do
     recipe = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }
-    expect(Recipe.page.first.id).to eq(recipe.id)
+    expect(Recipe.page.last.id).to eq(recipe.id)
     recipe2 = create(:recipe)
     19.times { create(:recipe, user: recipe.user) }
-    expect(Recipe.page(1).first.id).to eq(recipe2.id)
+    expect(Recipe.page(0).last.id).to eq(recipe2.id)
+    expect(Recipe.page(1).last.id).to eq(recipe.id)
     expect(recipe.id).to_not eq(recipe2.id)
   end
 
@@ -120,6 +122,25 @@ RSpec.describe Recipe, type: :model do
     expect(result).to_not be_nil
     expect(result.count).to eq(1)
     expect(result.first.id).to eq(recipe.id)
+  end
+
+  it 'has a category scope' do
+    category = create(:category)
+    recipe = create(:recipe, category: category)
+
+    recipes = Recipe.category(category.id)
+    expect(recipes.count).to eq(1)
+    expect(recipes.first.id).to eq(recipe.id)
+
+    create(:recipe, category: category)
+    recipes = Recipe.category(category.id)
+    expect(recipes.count).to eq(2)
+    expect(Recipe.count).to eq(2)
+
+    create(:recipe, category: create(:category))
+    recipes = Recipe.category(category.id)
+    expect(recipes.count).to eq(2)
+    expect(Recipe.count).to eq(3)
   end
 
   it 's search scope does not show wrong result' do

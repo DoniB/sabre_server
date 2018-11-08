@@ -46,17 +46,21 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
 
       get :index, params: { page: 0}
       json = JSON.parse(response.body)
-      expect(json[0]['id']).to eq(recipe.id)
+      expect(json.last['id']).to eq(recipe.id)
       expect(json.size).to eq(20)
       recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
       19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
 
       get :index, params: { page: 1}
       json = JSON.parse(response.body)
-      expect(json[0]['id']).to eq(recipe2.id)
+      expect(json.last['id']).to eq(recipe.id)
       expect(recipe.id).to_not eq(recipe2.id)
       expect(json.size).to eq(20)
       expect(Recipe.count).to eq(40)
+
+      get :index, params: { page: 0}
+      json = JSON.parse(response.body)
+      expect(json.last['id']).to eq(recipe2.id)
     end
 
     it 'has default value paginated' do
@@ -65,17 +69,51 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
 
       get :index
       json = JSON.parse(response.body)
-      expect(json[0]['id']).to eq(recipe.id)
+      expect(json.last['id']).to eq(recipe.id)
       expect(json.size).to eq(20)
       recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
       19.times { create(:recipe, user: recipe.user, status: RecipeStatus::ACTIVE) }
 
       get :index, params: { page: 1 }
       json = JSON.parse(response.body)
-      expect(json[0]['id']).to eq(recipe2.id)
+      expect(json.last['id']).to eq(recipe.id)
       expect(recipe.id).to_not eq(recipe2.id)
       expect(json.size).to eq(20)
       expect(Recipe.count).to eq(40)
+
+      get :index
+      json = JSON.parse(response.body)
+      expect(json.last['id']).to eq(recipe2.id)
+    end
+
+    it 'has filters result by category' do
+      category = create(:category)
+      category2 = create(:category)
+
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE, category: category)
+
+      get :index, params: { category: category.id }
+      json = JSON.parse(response.body)
+      expect(json.first['id']).to eq(recipe.id)
+      expect(json.size).to eq(1)
+
+      recipe2 = create(:recipe, status: RecipeStatus::ACTIVE, category: category)
+      get :index, params: { category: category.id }
+      json = JSON.parse(response.body)
+      expect(json.last['id']).to eq(recipe.id)
+      expect(json.first['id']).to eq(recipe2.id)
+      expect(recipe.id).to_not eq(recipe2.id)
+      expect(json.size).to eq(2)
+      expect(Recipe.count).to eq(2)
+
+      create(:recipe, status: RecipeStatus::ACTIVE, category: category2)
+      get :index, params: { category: category.id }
+      json = JSON.parse(response.body)
+      expect(json.last['id']).to eq(recipe.id)
+      expect(json.first['id']).to eq(recipe2.id)
+      expect(recipe.id).to_not eq(recipe2.id)
+      expect(json.size).to eq(2)
+      expect(Recipe.count).to eq(3)
     end
 
     it 'filter recipes by query' do
@@ -89,14 +127,14 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
       get :index, params: { q: 'receita' }
       json = JSON.parse(response.body)
       expect(json.size).to eq(2)
-      expect(json[0]['id']).to eq(recipe.id)
-      expect(json[1]['id']).to eq(recipe2.id)
+      expect(json[1]['id']).to eq(recipe.id)
+      expect(json[0]['id']).to eq(recipe2.id)
 
       get :index, params: { q: 'receitas' }
       json = JSON.parse(response.body)
       expect(json.size).to eq(2)
-      expect(json[0]['id']).to eq(recipe.id)
-      expect(json[1]['id']).to eq(recipe2.id)
+      expect(json[1]['id']).to eq(recipe.id)
+      expect(json[0]['id']).to eq(recipe2.id)
 
       get :index, params: { q: 'banana' }
       json = JSON.parse(response.body)

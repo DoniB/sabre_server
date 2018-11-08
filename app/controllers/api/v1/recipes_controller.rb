@@ -16,8 +16,12 @@ class Api::V1::RecipesController < Api::V1::ApiController
   private
 
   def get_recipes
-    return Recipe.active.page(page) if params[:q].nil?
-    Recipe.active.search(params[:q]).page(page)
+    recipes = Recipe.active.page(page)
+    query = params[:q]
+    recipes = recipes.search(query) unless query.nil?
+    category = params[:category]
+    recipes = recipes.category(category) if (!category.nil? && category.to_i > 0)
+    recipes
   end
 
   def page

@@ -14,11 +14,12 @@ class Recipe < ApplicationRecord
   has_many :comments
   has_many :ratings
 
-  default_scope -> { order(id: :asc) }
+  default_scope -> { order(id: :desc) }
 
   scope :active, -> { where('status = ?', RecipeStatus::ACTIVE) }
   scope :waiting_activation, -> { where('status = ?', RecipeStatus::WAITING_ACTIVATION) }
   scope :page, -> (p = 0) { limit(PAGE_LIMIT).offset(p * PAGE_LIMIT) }
+  scope :category, -> (c) { where('category_id = ?', c) }
 
   pg_search_scope(
     :search,
