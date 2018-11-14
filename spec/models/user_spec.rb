@@ -135,4 +135,28 @@ RSpec.describe User, type: :model do
     expect(user.ratings.count).to eq(2)
   end
 
+  it 'has pages' do
+    expect(User.count).to eq(0)
+    expect(User.total_pages).to eq(0)
+
+    30.times { create :user }
+    expect(User.count).to eq(30)
+    expect(User.total_pages).to eq(1)
+
+    30.times { create :user }
+    expect(User.count).to eq(60)
+    expect(User.total_pages).to eq(2)
+
+    expect(User.page.count).to eq(30)
+    expect(User.page(0).count).to eq(30)
+    expect(User.page(1).count).to eq(30)
+    expect(User.page(2).count).to eq(0)
+
+    user = create(:user)
+    expect(User.page.first.id).to eq(user.id)
+    expect(User.page(0).first.id).to eq(user.id)
+    expect(User.first.id).to eq(user.id)
+    expect(User.page(1).first.id).to_not eq(user.id)
+  end
+
 end
