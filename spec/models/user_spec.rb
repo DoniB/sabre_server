@@ -159,4 +159,14 @@ RSpec.describe User, type: :model do
     expect(User.page(1).first.id).to_not eq(user.id)
   end
 
+  it 'has a search scope' do
+    user = create(:user, username: 'usuario', email: 'email@email.com')
+    create(:user, username: 'another', email: 'other@other.com')
+    result = User.search 'usuarios'
+
+    expect(result).to_not be_nil
+    expect(result.count).to eq(1)
+    expect(result.first.id).to eq(user.id)
+  end
+
 end

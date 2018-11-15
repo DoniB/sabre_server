@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include PgSearch
+
   before_save { self.email = email.downcase }
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-.]+\.[a-z]+\z/i
   validates :username, presence: true
@@ -17,6 +19,20 @@ class User < ApplicationRecord
 
   scope :admins, -> { where('is_admin = ?', true) }
   scope :page, -> (p = 0) { limit(USERS_PER_PAGE).offset(p * USERS_PER_PAGE) }
+  scope :total_pages, -> { (count / USERS_PER_PAGE.to_f).ceil }
+
+  pg_search_scope(
+      :search,
+      against: %i(
+      username
+      email
+    ),
+      using: {
+          tsearch: {
+              dictionary: 'portuguese'
+          }
+      }
+  )
 
   USERS_PER_PAGE = 30
 

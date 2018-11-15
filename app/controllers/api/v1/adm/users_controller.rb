@@ -1,16 +1,16 @@
 class Api::V1::Adm::UsersController < Api::V1::ApiController
 
   before_action :require_admin_authentication!
-  before_action :load_page, only: [:index]
+  before_action :load_users, only: [:index]
   before_action -> { @user = User.find_by id: params[:id] }, only: [:update]
 
   def index
     render json: {
         page: {
             current: @current_page,
-            total: User.total_pages
+            total: @total_pages
         },
-        users: User.page(@current_page)
+        users: @users
     }
   end
 
@@ -44,7 +44,11 @@ class Api::V1::Adm::UsersController < Api::V1::ApiController
                   :password)
   end
 
-  def load_page
+  def load_users
+    @users = User.page params[:page].to_i
+    q = params[:q]
+    @users = @users.search(q) unless q.nil?
+    @total_pages = @users.total_pages
     @current_page = params[:page].to_i
   end
 
