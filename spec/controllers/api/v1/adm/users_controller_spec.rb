@@ -76,6 +76,63 @@ RSpec.describe Api::V1::Adm::UsersController, type: :controller do
 
   end
 
+  describe 'GET api/v1//adm/users#show' do
+
+    it 'should list users to admins' do
+      create(:user)
+      admin = create(:admin)
+      user = create(:user)
+      create(:user)
+      token = admin.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :show, params: { id: user.id}
+      json = JSON.parse(response.body)
+
+      expect(User.count).to eq(4)
+      expect(json['username']).to eq(user.username)
+      expect(json['email']).to eq(user.email)
+      expect(json['id']).to eq(user.id)
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not list users to non admins' do
+      create(:user)
+      admin = create(:user)
+      user = create(:user)
+      create(:user)
+      token = admin.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :show, params: { id: user.id}
+      json = JSON.parse(response.body)
+
+      expect(User.count).to eq(4)
+      expect(json['username']).to be_nil
+      expect(json['email']).to be_nil
+      expect(json['id']).to be_nil
+      expect(response.status).to eq(403)
+    end
+
+    it 'should not list users visitors' do
+      create(:user)
+      user = create(:user)
+      create(:user)
+
+      get :show, params: { id: user.id}
+      json = JSON.parse(response.body)
+
+      expect(User.count).to eq(3)
+      expect(json['username']).to be_nil
+      expect(json['email']).to be_nil
+      expect(json['id']).to be_nil
+      expect(response.status).to eq(403)
+    end
+
+  end
+
   describe 'POST api/v1//adm/users#create' do
 
     it 'should create an user' do

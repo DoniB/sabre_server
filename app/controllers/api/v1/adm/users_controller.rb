@@ -2,7 +2,7 @@ class Api::V1::Adm::UsersController < Api::V1::ApiController
 
   before_action :require_admin_authentication!
   before_action :load_users, only: [:index]
-  before_action -> { @user = User.find_by id: params[:id] }, only: [:update]
+  before_action -> { @user = User.find_by id: params[:id] }, only: [:update, :show]
 
   def index
     render json: {
@@ -12,6 +12,10 @@ class Api::V1::Adm::UsersController < Api::V1::ApiController
         },
         users: @users
     }
+  end
+
+  def show
+    render json: @user
   end
 
   def create

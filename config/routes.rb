@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       end
 
       namespace :adm do
-        resources :users, only: [:index, :create, :update]
+        resources :users, only: [:index, :create, :update, :show]
       end
 
       resources :recipes, only: [:index, :show] do
