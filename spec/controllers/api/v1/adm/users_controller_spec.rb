@@ -49,7 +49,7 @@ RSpec.describe Api::V1::Adm::UsersController, type: :controller do
 
   describe 'POST api/v1//adm/users#create' do
 
-    it 'should create a user' do
+    it 'should create an user' do
       admin = create(:admin)
       token = admin.secure_tokens.create
       request.headers['X-Secure-Token'] = token.token
@@ -72,7 +72,7 @@ RSpec.describe Api::V1::Adm::UsersController, type: :controller do
       expect(response.status).to eq(201)
     end
 
-    it 'should create a admin' do
+    it 'should create an admin' do
       admin = create(:admin)
       token = admin.secure_tokens.create
       request.headers['X-Secure-Token'] = token.token
@@ -129,6 +129,95 @@ RSpec.describe Api::V1::Adm::UsersController, type: :controller do
       expect(json['username']).to be_nil
       expect(json['email']).to be_nil
       expect(response.status).to eq(403)
+    end
+
+  end
+
+  describe 'PATCH api/v1//adm/users#update' do
+
+    it 'should update a user' do
+      admin = create(:admin)
+      token = admin.secure_tokens.create
+      request.headers['X-Secure-Token'] = token.token
+
+      expect(User.count).to eq(1)
+
+      attributes = create(:user).attributes
+      new_username = attributes['username'] + 'abc'
+      attributes['username'] = attributes['username'] + 'abc'
+
+      patch :update, params: attributes
+      json = JSON.parse(response.body)
+      expect(User.count).to eq(2)
+      expect(json['error']).to be_nil
+      expect(json['id']).to_not eq(admin.id)
+      expect(json['id']).to eq(attributes['id'])
+      expect(json['username']).to eq(new_username)
+      expect(json['email']).to eq(attributes['email'])
+      expect(json['is_admin']).to be_falsey
+      expect(response.status).to eq(200)
+    end
+
+    it 'should change a user to an admin' do
+      admin = create(:admin)
+      token = admin.secure_tokens.create
+      request.headers['X-Secure-Token'] = token.token
+
+      expect(User.count).to eq(1)
+
+      attributes = create(:user).attributes
+      attributes['is_admin'] = true
+
+      expect(User.first.is_admin?).to be_falsey
+
+      patch :update, params: attributes
+      json = JSON.parse(response.body)
+      expect(User.count).to eq(2)
+      expect(json['error']).to be_nil
+      expect(json['id']).to_not eq(admin.id)
+      expect(json['id']).to eq(attributes['id'])
+      expect(json['username']).to eq(attributes['username'])
+      expect(json['email']).to eq(attributes['email'])
+      expect(json['is_admin']).to be_truthy
+      expect(response.status).to eq(200)
+    end
+
+    it 'should not update a user as a normal user' do
+      admin = create(:user)
+      token = admin.secure_tokens.create
+      request.headers['X-Secure-Token'] = token.token
+
+      expect(User.count).to eq(1)
+
+      attributes = create(:user).attributes
+      attributes['is_admin'] = true
+
+      patch :create, params: attributes
+      json = JSON.parse(response.body)
+      expect(User.count).to eq(2)
+      expect(json['error']).to eq('Forbidden')
+      expect(json['id']).to be_nil
+      expect(json['username']).to be_nil
+      expect(json['email']).to be_nil
+      expect(response.status).to eq(403)
+      expect(User.first.is_admin?).to be_falsey
+      expect(User.last.is_admin?).to be_falsey
+    end
+
+    it 'should not update a user as a visitor' do
+      expect(User.count).to eq(0)
+      attributes = create(:user).attributes
+      attributes['is_admin'] = true
+      expect(User.count).to eq(1)
+
+      patch :create, params: attributes
+      json = JSON.parse(response.body)
+      expect(User.count).to eq(1)
+      expect(json['id']).to be_nil
+      expect(json['username']).to be_nil
+      expect(json['email']).to be_nil
+      expect(response.status).to eq(403)
+      expect(User.first.is_admin?).to be_falsey
     end
 
   end

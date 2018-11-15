@@ -1,7 +1,8 @@
 class Api::V1::Adm::UsersController < Api::V1::ApiController
 
   before_action :require_admin_authentication!
-  before_action :load_page
+  before_action :load_page, only: [:index]
+  before_action -> { @user = User.find_by id: params[:id] }, only: [:update]
 
   def index
     render json: {
@@ -20,6 +21,16 @@ class Api::V1::Adm::UsersController < Api::V1::ApiController
       render json: user, status: :created
     else
       render json: { errors: user.errors},
+             status: :unprocessable_entity
+    end
+  end
+
+  def update
+
+    if @user.update(user_params)
+      render json: @user
+    else
+      render json: { errors: @user.errors},
              status: :unprocessable_entity
     end
   end
