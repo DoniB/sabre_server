@@ -29,7 +29,9 @@ class User < ApplicationRecord
     ),
       using: {
           tsearch: {
-              dictionary: 'portuguese'
+              dictionary: 'portuguese',
+              any_word: true,
+              prefix: true
           }
       }
   )

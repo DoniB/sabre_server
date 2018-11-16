@@ -13,7 +13,7 @@ FactoryBot.define do
   end
 
   factory :comment do
-    text { Faker::GameOfThrones.quote }
+    text { Faker::TvShows::GameOfThrones.quote }
     user { create(:user) }
     recipe { create(:recipe) }
   end
