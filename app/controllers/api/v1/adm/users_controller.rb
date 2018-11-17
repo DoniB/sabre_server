@@ -49,11 +49,17 @@ class Api::V1::Adm::UsersController < Api::V1::ApiController
   end
 
   def load_users
-    @users = User.page params[:page].to_i
-    q = params[:q]
-    @users = @users.search(q) unless q.nil?
-    @total_pages = @users.total_pages
     @current_page = params[:page].to_i
+    @users = User.page @current_page
+    q = params[:q]
+
+    if q.nil?
+      @total_pages = User.total_pages
+    else
+      @users = @users.search(q)
+      @total_pages = User.search(q).total_pages
+    end
+
   end
 
 end

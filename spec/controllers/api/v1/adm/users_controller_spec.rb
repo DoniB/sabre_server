@@ -21,6 +21,23 @@ RSpec.describe Api::V1::Adm::UsersController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it 'should paginate users' do
+      30.times { create(:user) }
+      admin = create(:admin)
+      token = admin.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      get :index
+      json = JSON.parse(response.body)
+
+      expect(json['users'].size).to eq(30)
+      expect(json['page']['current']).to eq(0)
+      expect(json['page']['total']).to eq(2)
+      expect(json['users'][0]['id']).to eq(admin.id)
+      expect(response.status).to eq(200)
+    end
+
     it 'should search users' do
       3.times { create(:user) }
       admin = create(:admin)
@@ -47,6 +64,24 @@ RSpec.describe Api::V1::Adm::UsersController, type: :controller do
       expect(json['page']['current']).to eq(0)
       expect(json['page']['total']).to eq(1)
       expect(json['users'][0]['id']).to eq(user.id)
+      expect(response.status).to eq(200)
+    end
+
+    it 'should paginate search for users' do
+      31.times { create(:user) }
+      admin = create(:admin)
+      token = admin.secure_tokens.create
+
+      request.headers['X-Secure-Token'] = token.token
+
+      31.times { create(:user, username: 'usuario') }
+
+      get :index, params: { q: 'usuarios' }
+      json = JSON.parse(response.body)
+
+      expect(json['users'].size).to eq(30)
+      expect(json['page']['current']).to eq(0)
+      expect(json['page']['total']).to eq(2)
       expect(response.status).to eq(200)
     end
 
