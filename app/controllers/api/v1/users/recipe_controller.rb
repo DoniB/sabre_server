@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 class Api::V1::Users::RecipeController < Api::V1::ApiController
   before_action :require_authentication!
-  before_action :set_recipe, only: [:update, :show]
+  before_action :set_recipe, only: %i[update show]
 
   def index
     render json: query_recipe
@@ -8,8 +10,9 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
 
   def show
     unless can_edit? @recipe
-      return render json: { error: 'You are not allowed to edit this recipe'}, status: :forbidden
+      return render json: { error: "You are not allowed to edit this recipe" }, status: :forbidden
     end
+
     render json: @recipe
   end
 
@@ -19,14 +22,14 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
     if recipe.save
       render json: recipe, status: :created
     else
-      render json: { errors: recipe.errors},
+      render json: { errors: recipe.errors },
              status: :unprocessable_entity
     end
   end
 
   def update
     unless can_edit? @recipe
-      return render json: { error: 'You are not allowed to edit this recipe'}, status: :forbidden
+      return render json: { error: "You are not allowed to edit this recipe" }, status: :forbidden
     end
 
     if @recipe.update(recipe_params)
@@ -36,29 +39,35 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
     end
   end
 
+  private
 
-private
-
-  def set_recipe
-    @recipe = Recipe.find params[:id]
-  end
-
-  def recipe_params
-    permit =  [ :ingredients, :name, :directions, :category_id ]
-    if @user.is_admin?
-      permit << :status
+    def set_recipe
+      @recipe = Recipe.find params[:id]
     end
-    params.permit(permit)
-  end
 
-  def query_recipe
-    return Recipe.waiting_activation if (params['status'] == 'waiting_activation') && @user.is_admin?
-    @user.recipes
-  end
+    def recipe_params
+      permit =  %i[ingredients name directions category_id]
+      permit << :status if @user.is_admin?
+      params.permit(permit)
+    end
 
-  def can_edit?(recipe)
-    return true if(recipe.user.id == @user.id) || @user.is_admin?
-    false
-  end
+    def query_recipe
+      if @user.is_admin?
+        waiting_activation = params["status"] == "waiting_activation"
+        all_users = params["all_users"] == "1"
 
+        recipes = all_users ? Recipe.all : @user.recipes
+        recipes = recipes.waiting_activation if waiting_activation
+
+        return recipes
+      end
+
+      @user.recipes
+    end
+
+    def can_edit?(recipe)
+      return true if (recipe.user.id == @user.id) || @user.is_admin?
+
+      false
+    end
 end
