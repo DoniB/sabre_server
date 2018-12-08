@@ -59,10 +59,15 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
         recipes = all_users ? Recipe.all : @user.recipes
         recipes = recipes.waiting_activation if waiting_activation
 
-        return recipes
+        recipes
+      else
+        recipes = @user.recipes
       end
 
-      @user.recipes
+      query = params["q"]
+      recipes = recipes.search(query) if query
+
+      recipes
     end
 
     def can_edit?(recipe)

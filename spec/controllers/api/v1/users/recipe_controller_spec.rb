@@ -262,6 +262,23 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it "should search the user`s recipes" do
+      user = create(:user)
+      token = user.secure_tokens.create
+      4.times { create(:recipe, user: user) }
+      recipe = create(:recipe, user: user, name: "abcdefghijklm")
+      expect(user.recipes.count).to eq(5)
+
+      request.headers["X-Secure-Token"] = token.token
+
+      get :index, params: { q: recipe.name }
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(1)
+      expect(json[0]["user_id"]).to eq(user.id)
+      expect(response.status).to eq(200)
+    end
+
     it "should not return another user`s recipes" do
       user = create(:user)
       token = user.secure_tokens.create
@@ -326,6 +343,26 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
 
       json = JSON.parse(response.body)
       expect(json.size).to eq(3)
+      expect(response.status).to eq(200)
+    end
+
+    it "should search all users recipes when admin" do
+      user = create(:admin)
+      token = user.secure_tokens.create
+      4.times { create(:recipe, status: RecipeStatus::ACTIVE) }
+      2.times { create(:recipe, status: RecipeStatus::ACTIVE, user: user) }
+
+      recipe = create(:recipe, name: "abcdefghijklm")
+      expect(user.recipes.count).to eq(2)
+
+      request.headers["X-Secure-Token"] = token.token
+
+      get :index, params: { q: recipe.name, all_users: 1 }
+
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(1)
+      expect(json[0]["user_id"]).to_not eq(user.id)
+      expect(json[0]["user_id"]).to eq(recipe.user_id)
       expect(response.status).to eq(200)
     end
   end
