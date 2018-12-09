@@ -1,81 +1,87 @@
-require 'rails_helper'
+# frozen_string_literal: true
+
+require "rails_helper"
 
 RSpec.describe User, type: :model do
-  it 'is valid with attributes' do
+  it "is valid with attributes" do
     expect(create(:user)).to be_valid
   end
 
-  it 'is not valid without the username' do
+  it "is is active by default" do
+    expect(create(:user).active).to be_truthy
+  end
+
+  it "is not valid without the username" do
     user = build(:user, username: nil)
     expect(user).to_not be_valid
   end
 
-  it 'is not valid without the email' do
+  it "is not valid without the email" do
     user = build(:user, email: nil)
     expect(user).to_not be_valid
   end
 
-  it 'is not valid without the password' do
+  it "is not valid without the password" do
     user = build(:user, password: nil)
     expect(user).to_not be_valid
   end
 
-  it 'is not valid with invalid email' do
-    user = build(:user, email: 'email with space@example.com')
+  it "is not valid with invalid email" do
+    user = build(:user, email: "email with space@example.com")
     expect(user).to_not be_valid
-    user.email = 'emailwithspace@example . com'
+    user.email = "emailwithspace@example . com"
     expect(user).to_not be_valid
-    user.email = 'withoutAt.com'
+    user.email = "withoutAt.com"
     expect(user).to_not be_valid
-    user.email = 'withoutat.com'
+    user.email = "withoutat.com"
     expect(user).to_not be_valid
-    user.email = 'withou@dot'
-    expect(user).to_not be_valid
-  end
-
-  it 'is not valid with password less than 6 characters' do
-    user = build(:user, password: '12345')
+    user.email = "withou@dot"
     expect(user).to_not be_valid
   end
 
-  it 'is not valid with duplicate email' do
+  it "is not valid with password less than 6 characters" do
+    user = build(:user, password: "12345")
+    expect(user).to_not be_valid
+  end
+
+  it "is not valid with duplicate email" do
     user = create(:user).dup
     expect(user).to_not be_valid
   end
 
-  it 'saves emails with the lower case' do
-    email = 'EMAIL@EXAMPLE.COM'
+  it "saves emails with the lower case" do
+    email = "EMAIL@EXAMPLE.COM"
     user = create(:user, email: email)
     expect(user.email).to eq(email.downcase)
   end
 
-  it 'is not valid with different password and password_confirmation' do
-    password = ('a'..'z').to_a.join
+  it "is not valid with different password and password_confirmation" do
+    password = ("a".."z").to_a.join
     user = build(:user, password: password)
     user.password_confirmation = password.reverse
     expect(user).to_not be_valid
   end
 
-  it 'is valid with password equals to password_confirmation' do
-    password = ('a'..'z').to_a.join
+  it "is valid with password equals to password_confirmation" do
+    password = ("a".."z").to_a.join
     user = build(:user, password: password)
     user.password_confirmation = password
     expect(user).to be_valid
   end
 
-  it 'should validate the user with password' do
-    password = ('a'..'z').to_a.join
+  it "should validate the user with password" do
+    password = ("a".."z").to_a.join
     user = create(:user, password: password)
     expect(user.authenticate password).to eq(user)
   end
 
-  it 'should not validate the user with a wrong password' do
-    password = ('a'..'z').to_a.join
+  it "should not validate the user with a wrong password" do
+    password = ("a".."z").to_a.join
     user = create(:user, password: password)
     expect(user.authenticate password.reverse).to_not be_truthy
   end
 
-  it 'should have secure tokens' do
+  it "should have secure tokens" do
     user = create(:user)
     token1 = user.secure_tokens.create
     token2 = user.secure_tokens.create
@@ -84,7 +90,7 @@ RSpec.describe User, type: :model do
     expect(token2.user).to eq(user)
   end
 
-  it 'should have recipes' do
+  it "should have recipes" do
     user = create(:user)
     r = build(:recipe, user: nil)
     recipe1 = user.recipes.create r.attributes
@@ -95,7 +101,7 @@ RSpec.describe User, type: :model do
     expect(recipe2.user).to eq(user)
   end
 
-  it 'should have comment' do
+  it "should have comment" do
     user = create(:user)
     c = create(:comment, user: user)
 
@@ -115,7 +121,7 @@ RSpec.describe User, type: :model do
     expect(Comment.last.user.id).to eq(user.id)
   end
 
-  it 'has ratings' do
+  it "has ratings" do
     user = create(:user)
     expect(user.ratings.count).to eq(0)
 
@@ -135,7 +141,7 @@ RSpec.describe User, type: :model do
     expect(user.ratings.count).to eq(2)
   end
 
-  it 'has pages' do
+  it "has pages" do
     expect(User.count).to eq(0)
     expect(User.total_pages).to eq(0)
 
@@ -159,14 +165,24 @@ RSpec.describe User, type: :model do
     expect(User.page(1).first.id).to_not eq(user.id)
   end
 
-  it 'has a search scope' do
-    user = create(:user, username: 'usuario', email: 'email@email.com')
-    create(:user, username: 'another', email: 'other@other.com')
-    result = User.search 'usuarios'
+  it "has a search scope" do
+    user = create(:user, username: "usuario", email: "email@email.com")
+    create(:user, username: "another", email: "other@other.com")
+    result = User.search "usuarios"
 
     expect(result).to_not be_nil
     expect(result.count).to eq(1)
     expect(result.first.id).to eq(user.id)
   end
 
+  it "has a active scope" do
+    user = create(:user)
+    create(:user, active: false)
+
+    result = User.actives
+
+    expect(result).to_not be_nil
+    expect(result.count).to eq(1)
+    expect(result.first.id).to eq(user.id)
+  end
 end

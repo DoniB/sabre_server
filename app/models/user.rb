@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   include PgSearch
 
@@ -17,19 +19,20 @@ class User < ApplicationRecord
 
   default_scope -> { order(id: :desc) }
 
-  scope :admins, -> { where('is_admin = ?', true) }
+  scope :admins, -> { where("is_admin = ?", true) }
+  scope :actives, -> { where("active = ?", true) }
   scope :page, -> (p = 0) { limit(USERS_PER_PAGE).offset(p * USERS_PER_PAGE) }
   scope :total_pages, -> { (count / USERS_PER_PAGE.to_f).ceil }
 
   pg_search_scope(
-      :search,
+    :search,
       against: %i(
       username
       email
     ),
       using: {
           tsearch: {
-              dictionary: 'portuguese',
+              dictionary: "portuguese",
               any_word: true,
               prefix: true
           }
@@ -41,5 +44,4 @@ class User < ApplicationRecord
   def self.total_pages
     (User.count / USERS_PER_PAGE.to_f).ceil
   end
-
 end
