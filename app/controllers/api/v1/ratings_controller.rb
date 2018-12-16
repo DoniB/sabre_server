@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Api::V1::RatingsController < Api::V1::ApiController
   before_action :require_authentication!
   before_action :set_rating
@@ -12,7 +14,7 @@ class Api::V1::RatingsController < Api::V1::ApiController
     if rating.save
       render json: rating, status: :created
     else
-      render json: { errors: rating.errors},
+      render json: { errors: rating.errors },
              status: :unprocessable_entity
     end
   end
@@ -27,11 +29,11 @@ class Api::V1::RatingsController < Api::V1::ApiController
 
   private
 
-  def set_rating
-    @rating = @user.ratings.find_by recipe_id: params[:recipe_id]
-  end
+    def set_rating
+      @rating = @user.ratings.find_by recipe_id: params[:recipe_id]
+    end
 
-  def set_recipe
-    @recipe = Recipe.find_by id: params[:recipe_id]
-  end
+    def set_recipe
+      @recipe = Recipe.find_by id: params[:recipe_id]
+    end
 end

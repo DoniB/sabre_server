@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
@@ -19,8 +21,6 @@ Rails.application.routes.draw do
         resources :comments, only: [:index, :create, :destroy]
         resource :rating, only: [:show, :create]
       end
-
     end
   end
-
 end

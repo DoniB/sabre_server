@@ -1,7 +1,8 @@
-require 'faker'
+# frozen_string_literal: true
+
+require "faker"
 
 FactoryBot.define do
-
   factory :category do
     name { Faker::Book.genre }
   end
@@ -45,5 +46,4 @@ FactoryBot.define do
     password { Faker::Internet.password }
     is_admin { true }
   end
-
 end

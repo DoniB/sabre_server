@@ -1,4 +1,6 @@
-require 'recipe_status'
+# frozen_string_literal: true
+
+require "recipe_status"
 
 class Recipe < ApplicationRecord
   include PgSearch
@@ -16,10 +18,10 @@ class Recipe < ApplicationRecord
 
   default_scope -> { order(id: :desc) }
 
-  scope :active, -> { where('status = ?', RecipeStatus::ACTIVE) }
-  scope :waiting_activation, -> { where('status = ?', RecipeStatus::WAITING_ACTIVATION) }
+  scope :active, -> { where("status = ?", RecipeStatus::ACTIVE) }
+  scope :waiting_activation, -> { where("status = ?", RecipeStatus::WAITING_ACTIVATION) }
   scope :page, -> (p = 0) { limit(PAGE_LIMIT).offset(p * PAGE_LIMIT) }
-  scope :category, -> (c) { where('category_id = ?', c) }
+  scope :category, -> (c) { where("category_id = ?", c) }
 
   pg_search_scope(
     :search,
@@ -29,20 +31,19 @@ class Recipe < ApplicationRecord
     ),
     using: {
         tsearch: {
-            dictionary: 'portuguese'
+            dictionary: "portuguese"
         }
     }
   )
 
   def as_json(options = {})
-    super(options).merge({
+    super(options).merge(
       owner: user.username
-    })
+    )
   end
 
   def update_average_stars
-    self.average_stars =  ratings.average(:stars).to_i
+    self.average_stars = ratings.average(:stars).to_i
     save
   end
-
 end

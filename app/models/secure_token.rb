@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SecureToken < ApplicationRecord
   TOKEN_LENGTH = 140
   before_validation :initialize_attributes
@@ -7,7 +9,7 @@ class SecureToken < ApplicationRecord
 
   belongs_to :user
 
-  scope :active, -> { where('expires > ?', Time.now) }
+  scope :active, -> { where("expires > ?", Time.now) }
 
   def SecureToken.generate_token
     SecureRandom.urlsafe_base64 TOKEN_LENGTH
@@ -19,5 +21,4 @@ private
     self.expires = 30.days.from_now if expires.nil?
     self.created_at = Time.now if created_at.nil?
   end
-
 end
