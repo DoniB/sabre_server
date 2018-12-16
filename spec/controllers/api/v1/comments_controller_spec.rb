@@ -160,5 +160,69 @@ RSpec.describe Api::V1::CommentsController, type: :request do
       json = JSON.parse(response.body)
       expect(json.size).to eq(0)
     end
+
+    it "should not return soft deleted comments" do
+      recipe = create(:recipe)
+      3.times { create :comment, recipe: recipe }
+      deleted = create(:comment, recipe: recipe, deleted_by_user: create(:admin))
+      expect(Comment.count).to eq(4)
+
+      get "/api/v1/recipes/#{recipe.id}/comments"
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(3)
+      Comment.active.each { |c|
+        expect(json).to include(JSON.parse(c.to_json))
+      }
+      expect(json).to_not include(JSON.parse(deleted.to_json))
+    end
+  end
+
+  describe "DELETE api/v1/recipes/:recipe_id/:id/comments#destroy" do
+    it "should be deleted by admin" do
+      comment = create(:comment)
+      recipe = comment.recipe
+      admin = create(:admin)
+      token = admin.secure_tokens.create
+
+      delete "/api/v1/recipes/#{recipe.id}/comments/#{comment.id}", headers: {
+          'X-Secure-Token': token.token }
+
+      expect(comment.deleted_at).to be_nil
+      expect(comment.deleted_by_user).to be_nil
+      comment.reload
+      expect(comment.deleted_at).to_not be_nil
+      expect(comment.deleted_by_user).to eq(admin)
+    end
+
+    it "should not be deleted by user" do
+      comment = create(:comment)
+      recipe = comment.recipe
+      user = create(:user)
+      token = user.secure_tokens.create
+
+      delete "/api/v1/recipes/#{recipe.id}/comments/#{comment.id}", headers: {
+          'X-Secure-Token': token.token }
+
+      expect(response.code).to eq("403")
+      expect(comment.deleted_at).to be_nil
+      expect(comment.deleted_by_user).to be_nil
+      comment.reload
+      expect(comment.deleted_at).to be_nil
+      expect(comment.deleted_by_user).to be_nil
+    end
+
+    it "should not be deleted by visitor" do
+      comment = create(:comment)
+      recipe = comment.recipe
+
+      delete "/api/v1/recipes/#{recipe.id}/comments/#{comment.id}"
+
+      expect(response.code).to eq("403")
+      expect(comment.deleted_at).to be_nil
+      expect(comment.deleted_by_user).to be_nil
+      comment.reload
+      expect(comment.deleted_at).to be_nil
+      expect(comment.deleted_by_user).to be_nil
+    end
   end
 end
