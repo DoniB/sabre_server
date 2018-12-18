@@ -3,6 +3,11 @@
 require "faker"
 
 FactoryBot.define do
+  factory :favorite do
+    user { create :user }
+    recipe { create :recipe }
+  end
+
   factory :category do
     name { Faker::Book.genre }
   end
