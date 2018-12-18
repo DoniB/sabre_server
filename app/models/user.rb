@@ -17,6 +17,10 @@ class User < ApplicationRecord
   has_many :comments
   has_many :ratings
   has_many :favorites
+  has_many :recipes_favorites,
+           class_name: "Recipe",
+           through: :favorites,
+           source: :recipe
 
   default_scope -> { order(id: :desc) }
 

@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
       namespace :users do
         resources :recipe, only: [:create, :update, :index, :show]
+        resources :favorites, only: [:index]
       end
 
       namespace :adm do
