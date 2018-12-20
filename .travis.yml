@@ -1,9 +1,9 @@
 addons:
   postgresql: 9.6
-#  code_climate:
-#      repo_token: <Get from Code Climate>
-#after_success:
-#  - bundle exec codeclimate-test-reporter
+  code_climate:
+      repo_token: 52f6268a924b437d4ad2676737d89638e259e582929bc3987d9b412ac58d7d53
+after_success:
+  - bundle exec codeclimate-test-reporter
 before_script:
   - cp config/database.yml.travis config/database.yml
   - psql -c 'create database travis_ci_test;' -U postgres
