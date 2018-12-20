@@ -1,3 +1,5 @@
+# SABRE_SERVER [![Build Status](https://travis-ci.org/DoniB/sabre_server.svg?branch=master)](https://travis-ci.org/DoniB/sabre_server)
+
 # README
 
 Repositório oficial SABRE_server.
