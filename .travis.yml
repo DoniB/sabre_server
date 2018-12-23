@@ -1,7 +1,8 @@
 addons:
   postgresql: 9.6
   code_climate:
-      repo_token: 52f6268a924b437d4ad2676737d89638e259e582929bc3987d9b412ac58d7d53
+    repo_token:
+      secure: "jtGsL3f5p2ytYW+ND+AwLcnjn7R0OpC5hbz1LxqBcPu0YKNFZj3G4n/iVitkVANuXsWU2JPitYYdyyzrdfHvHeERfxaTwK0tDhcTar0LdOwUl8bE12eWope5STplaesJG8r+3csDLcbITgTCL5w5lgMzS404JsQnhOHB/5FPUbrcJyvOIHQrBdFxqZBpeQ603lRnGCd2YLXO3XHCW3Tp0fMzG3Vcqu0WUZTNJEZwA/ti0bsd6L+MN+3A812BX16jS0liE11NtJtAwTtRLuqVi6j6sON7DG4rgMkTDLsaiow+COJZuLR62sY8LbRHqMyAzdbkw00mR9Lpj9PTwPl5c4HGgiZS/mzBb7wX7Lbi7rdctOcoluq8RtcL059QW8jstlA/6W4Eq17/yfo/8gtk5gi9Jq0v44hV3+ssQa22XqlAn2xmrt8Ocoj/c+Eva8JULXd/G0hFm5rGEv7HMfdg1ZffHGWKaUDvWqsByH/bkvDthiPiR7QikAFciC3UOhITBjC+8zMCTE2Qukr6ewSPiJrmdIqwW0lqOpEdX52z0amy2XseVR92aDjmy7tUfn/HTNo6EKXdcat0pu1OkEUVIqYtXI/ZqmLSAepQxCa2c2ZL5oSbzl2sm8DFZq2IOviwSFlBlvnNbsEw/9wmJdmGkdNH577oSaWhxmVSKDRVqnE="
 after_success:
   - bundle exec codeclimate-test-reporter
 before_script:
