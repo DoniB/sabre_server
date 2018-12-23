@@ -3,6 +3,15 @@
 require "faker"
 
 FactoryBot.define do
+  factory :image do
+    user { create :user }
+    recipe { user.nil? ? create(:recipe) : create(:recipe, user: user) }
+    file { ActionDispatch::Http::UploadedFile.new(
+      tempfile: Rails.root.join("spec/files",
+        %w(600x450.jpg 500x700.jpg 600x450.png 650x450.jpg 1200x900.jpg).sample),
+      filename: %w(600x450.jpg 500x700.jpg 600x450.png 650x450.jpg 1200x900.jpg).sample) }
+  end
+
   factory :favorite do
     user { create :user }
     recipe { create :recipe }

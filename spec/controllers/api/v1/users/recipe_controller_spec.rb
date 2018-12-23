@@ -125,6 +125,82 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(Recipe.find_by name: recipe.name).to be_nil
       expect(user.recipes.count).to eq(0)
     end
+
+    context "with files" do
+      let(:image_normal_jpg) { fixture_file_upload Rails.root.join("spec/files", "600x450.jpg"), "image/jpg"  }
+      let(:image_normal_png) { fixture_file_upload Rails.root.join("spec/files", "600x450.png"), "image/png"  }
+      let(:pdf_file) { fixture_file_upload Rails.root.join("spec/files", "test.pdf"), "application/pdf"  }
+
+      it "should save jpg image cover" do
+        user = create(:user)
+        token = user.secure_tokens.create
+        recipe = build(:recipe)
+
+        request.headers["X-Secure-Token"] = token.token
+        new_recipe = recipe.attributes
+        new_recipe[:cover] = image_normal_jpg
+
+        expect(Image.count).to eq(0)
+        post :create, params: new_recipe
+        expect(Image.count).to eq(1)
+
+        expect(Image.first.file.attached?).to be_truthy
+
+        json = JSON.parse(response.body)
+
+        expect(json["errors"]).to be_nil
+        expect(json["error"]).to be_nil
+        expect(json["cover_id"]).to_not be_nil
+        expect(response.status).to eq(201)
+        expect(user.recipes.count).to eq(1)
+      end
+
+      it "should save png image cover" do
+        user = create(:user)
+        token = user.secure_tokens.create
+        recipe = build(:recipe)
+
+        request.headers["X-Secure-Token"] = token.token
+        new_recipe = recipe.attributes
+        new_recipe[:cover] = image_normal_png
+
+        expect(Image.count).to eq(0)
+        post :create, params: new_recipe
+        expect(Image.count).to eq(1)
+
+        expect(Image.first.file.attached?).to be_truthy
+
+        json = JSON.parse(response.body)
+
+        expect(json["errors"]).to be_nil
+        expect(json["error"]).to be_nil
+        expect(json["cover_id"]).to_not be_nil
+        expect(response.status).to eq(201)
+        expect(user.recipes.count).to eq(1)
+      end
+
+      it "should not save non image" do
+        user = create(:user)
+        token = user.secure_tokens.create
+        recipe = build(:recipe)
+
+        request.headers["X-Secure-Token"] = token.token
+        new_recipe = recipe.attributes
+        new_recipe[:cover] = pdf_file
+
+        expect(Image.count).to eq(0)
+        post :create, params: new_recipe
+        expect(Image.count).to eq(0)
+
+        json = JSON.parse(response.body)
+
+        expect(json["errors"]).to be_nil
+        expect(json["error"]).to be_nil
+        expect(json["cover_id"]).to be_nil
+        expect(response.status).to eq(201)
+        expect(user.recipes.count).to eq(1)
+      end
+    end
   end
 
   describe "PATCH api/v1/users/recipe#update" do
@@ -240,6 +316,84 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(json["status"]).to eq(RecipeStatus::ACTIVE)
       expect(response.status).to eq(202)
       expect(Recipe.find(recipe.id).status).to eq(RecipeStatus::ACTIVE)
+    end
+
+    context "with files" do
+      let(:image_normal_jpg) { fixture_file_upload Rails.root.join("spec/files", "600x450.jpg"), "image/jpg"  }
+      let(:image_normal_png) { fixture_file_upload Rails.root.join("spec/files", "600x450.png"), "image/png"  }
+      let(:pdf_file) { fixture_file_upload Rails.root.join("spec/files", "test.pdf"), "application/pdf"  }
+
+      it "should update jpg image cover" do
+        recipe = create(:recipe)
+        user = recipe.user
+        token = user.secure_tokens.create
+        user.is_admin = true
+        user.save
+
+        request.headers["X-Secure-Token"] = token.token
+
+        expect(Image.count).to eq(0)
+        patch :update, params: { id: recipe.id, cover: image_normal_jpg }
+        expect(Image.count).to eq(1)
+        expect(Image.first.file.attached?).to be_truthy
+
+        json = JSON.parse(response.body)
+
+        expect(json["errors"]).to be_nil
+        expect(json["error"]).to be_nil
+        expect(json["cover_id"]).to_not be_nil
+        expect(response.status).to eq(202)
+
+        last_id = json["cover_id"]
+        patch :update, params: { id: recipe.id, cover: image_normal_jpg }
+        expect(Image.count).to eq(2)
+        json = JSON.parse(response.body)
+        expect(json["cover_id"]).to_not eq(last_id)
+      end
+
+      it "should save png image cover" do
+        recipe = create(:recipe)
+        user = recipe.user
+        token = user.secure_tokens.create
+        user.is_admin = true
+        user.save
+
+        request.headers["X-Secure-Token"] = token.token
+
+        expect(Image.count).to eq(0)
+        patch :update, params: { id: recipe.id, cover: image_normal_png }
+        expect(Image.count).to eq(1)
+
+        expect(Image.first.file.attached?).to be_truthy
+
+        json = JSON.parse(response.body)
+
+        expect(json["errors"]).to be_nil
+        expect(json["error"]).to be_nil
+        expect(json["cover_id"]).to_not be_nil
+        expect(response.status).to eq(202)
+      end
+
+      it "should not save non image" do
+        recipe = create(:recipe)
+        user = recipe.user
+        token = user.secure_tokens.create
+        user.is_admin = true
+        user.save
+
+        request.headers["X-Secure-Token"] = token.token
+
+        expect(Image.count).to eq(0)
+        patch :update, params: { id: recipe.id, cover: pdf_file }
+        expect(Image.count).to eq(0)
+
+        json = JSON.parse(response.body)
+
+        expect(json["errors"]).to be_nil
+        expect(json["error"]).to be_nil
+        expect(json["cover_id"]).to be_nil
+        expect(response.status).to eq(202)
+      end
     end
   end
 

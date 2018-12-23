@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_12_21_030201) do
+ActiveRecord::Schema.define(version: 2018_12_21_052458) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,15 @@ ActiveRecord::Schema.define(version: 2018_12_21_030201) do
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
+  create_table "images", force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "recipe_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipe_id"], name: "index_images_on_recipe_id"
+    t.index ["user_id"], name: "index_images_on_user_id"
+  end
+
   create_table "ratings", force: :cascade do |t|
     t.integer "stars"
     t.bigint "user_id"
@@ -84,7 +93,9 @@ ActiveRecord::Schema.define(version: 2018_12_21_030201) do
     t.integer "status", limit: 2, default: 0
     t.integer "average_stars", default: 0
     t.bigint "category_id"
+    t.bigint "cover_id"
     t.index ["category_id"], name: "index_recipes_on_category_id"
+    t.index ["cover_id"], name: "index_recipes_on_cover_id"
     t.index ["user_id"], name: "index_recipes_on_user_id"
   end
 

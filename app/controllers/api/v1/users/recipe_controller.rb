@@ -17,12 +17,12 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
   end
 
   def create
-    recipe = @user.recipes.build recipe_params
-
-    if recipe.save
-      render json: recipe, status: :created
+    @recipe = @user.recipes.build recipe_params
+    if @recipe.save
+      save_cover
+      render json: @recipe, status: :created
     else
-      render json: { errors: recipe.errors },
+      render json: { errors: @recipe.errors },
              status: :unprocessable_entity
     end
   end
@@ -33,6 +33,7 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
     end
 
     if @recipe.update(recipe_params)
+      save_cover
       render json: @recipe, status: :accepted
     else
       render json: @recipe.errors, status: :unprocessable_entity
@@ -72,7 +73,13 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
 
     def can_edit?(recipe)
       return true if (recipe.user.id == @user.id) || @user.is_admin?
-
       false
+    end
+
+    def save_cover
+      cover = params[:cover]
+      unless cover.nil?
+        @recipe.create_cover file: cover, user: @user
+      end
     end
 end

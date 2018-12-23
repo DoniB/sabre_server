@@ -62,4 +62,11 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+  #
+  config.after(:all) do
+    # Get rid of the linked images
+    if Rails.env.test?
+      FileUtils.rm_rf(Dir["#{Rails.root.join("tmp/storage")}/*"])
+    end
+  end
 end

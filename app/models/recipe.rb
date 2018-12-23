@@ -13,6 +13,7 @@ class Recipe < ApplicationRecord
 
   belongs_to :user
   belongs_to :category
+  belongs_to :cover, class_name: "Image", optional: true
   has_many :comments
   has_many :ratings
 
@@ -37,9 +38,13 @@ class Recipe < ApplicationRecord
   )
 
   def as_json(options = {})
-    super(options).merge(
+    ret = super(options).merge(
       owner: user.username
     )
+    unless self.cover.nil?
+      ret[:cover] = Rails.application.routes.url_helpers.rails_blob_path(cover.file, only_path: true)
+    end
+    ret
   end
 
   def update_average_stars
