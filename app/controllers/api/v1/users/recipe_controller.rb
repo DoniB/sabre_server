@@ -79,6 +79,9 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
     def save_cover
       cover = params[:cover]
       unless cover.nil?
+        if cover.instance_of? String
+          cover = base64_to_image cover
+        end
         @recipe.create_cover file: cover, user: @user
       end
     end

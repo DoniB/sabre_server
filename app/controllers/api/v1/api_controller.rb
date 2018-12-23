@@ -30,5 +30,24 @@ module Api::V1
       @user = SecureToken.active.find_by(token: request.headers["X-Secure-Token"])&.user
       @user = nil if @user && !@user.active
     end
+
+    def base64_to_image(text)
+      hash = {}
+      if text.start_with? "data:image/jpeg"
+        hash[:filename] = "cover.jpg"
+        hash[:type] = "image/jpeg"
+      elsif texto.start_with? "data:image/png"
+        hash[:filename] = "cover.jpg"
+        hash[:type] = "image/png"
+      else
+        raise "Invalid image data"
+      end
+      tempfile = Tempfile.new("test_temp")
+      tempfile.binmode
+      tempfile.write(Base64.decode64 text.split(",")[1])
+      tempfile.close
+      hash[:tempfile] = tempfile
+      ActionDispatch::Http::UploadedFile.new hash
+    end
   end
 end

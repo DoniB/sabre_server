@@ -42,7 +42,7 @@ class Recipe < ApplicationRecord
       owner: user.username
     )
     if self.cover&.file&.image?
-      ret[:cover] = Rails.application.routes.url_helpers.rails_representation_url cover.file.variant(resize_to_fit: [100, 100])
+      ret[:cover] = Rails.application.routes.url_helpers.rails_representation_url cover.file.variant(resize: "600x450")
     end
     ret
   end
