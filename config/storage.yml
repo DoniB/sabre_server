@@ -18,7 +18,8 @@ local:
 google:
   service: GCS
   project: tcc-sabre
-  credentials: <%= Rails.env.production? ? JSON.parse(ENV['GOOGLE_APPLICATION_CREDENTIALS']) : Rails.root.join("config/secrets/tcc-sabre.json") %>
+  credentials:
+<%= ENV['GOOGLE_APPLICATION_CREDENTIALS'] %>
   bucket: tcc-sabre-storage
 #  credentials: <%= Rails.root.join("config/secrets/tcc-sabre.json") %>
 
