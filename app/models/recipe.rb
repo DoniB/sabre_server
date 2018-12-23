@@ -41,8 +41,8 @@ class Recipe < ApplicationRecord
     ret = super(options).merge(
       owner: user.username
     )
-    unless self.cover.nil?
-      ret[:cover] = Rails.application.routes.url_helpers.rails_blob_path(cover.file, only_path: true)
+    if self.cover&.file&.image?
+      ret[:cover] = Rails.application.routes.url_helpers.rails_representation_url cover.file.variant(resize_to_fit: [100, 100])
     end
     ret
   end

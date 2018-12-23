@@ -10,6 +10,10 @@ gem "faker", git: "https://github.com/stympy/faker.git", branch: "master"
 
 gem "google-cloud-storage", "~> 1.11", require: false
 
+gem "image_processing", "~> 1.2"
+gem "mini_magick"
+
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem "rails", "~> 5.2.1"
 # Use postgresql as the database for Active Record
