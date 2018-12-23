@@ -1,13 +1,16 @@
+env:
+  global:
+    - secure: "WBrA2Q2Bk9dRWwcGJME+/P56Kck4jfR0zBGyyl4KaEJMSCa6ERsMc64VnLVGWr32XAAv7Yu8hGxkeslpxui2vhEj509nVwuxydlzycb/7IPckju7y5FG1QPwn5KqG9v7qG8Hkb4/hLHk+yjODmBPo1fmUTAcR57k/Mwb2CSyky/6+0kgQJxL2+/9NkXd4tk/lX99em5yKawaaFrKJXP0NLDd4IyC/j314xTfKe56Vy8H6ElrojnUl9eV69fkVEElDLrQfk8Typ5g5zdMVYnPQKgYqHSUjaZtWidKTaGq8BarOGAarLN+sWI+VMul8hQE+tawp/phq95S4GoOkrki0tJgymn/FrUUnsh/LMwpI0kQLQj+Y90QJBFjdjR1oOso5j3dPqp1uOAASxDcT6VZ8dfT64oboyLN+XEd6arXPlZyyWVQ7hLU6znJ3xMnYTNQRf1D70OprSOzFu58iwbs5RX4ta8u6GShz/BGNvPBTkhebLysRThinz1S+aX2ZoWFlPAh4JzrF7yGsjD7lbDMJ5SDdviU5iiUFxAViYAWCtUpHPS8FgSlOIj3NvFZiKeCKXL48qJo2X6YBb8L1oTP/5cqNr3/ZbUP64TA5EWPmu/ysrQFeLkGoXqcYAo4Gx3IkvlyLeYX7yNVK2MwFNF7wwSa8veb+O7xL4Xo1rvkMPU="
 addons:
   postgresql: 9.6
-  code_climate:
-    repo_token:
-      secure: "jtGsL3f5p2ytYW+ND+AwLcnjn7R0OpC5hbz1LxqBcPu0YKNFZj3G4n/iVitkVANuXsWU2JPitYYdyyzrdfHvHeERfxaTwK0tDhcTar0LdOwUl8bE12eWope5STplaesJG8r+3csDLcbITgTCL5w5lgMzS404JsQnhOHB/5FPUbrcJyvOIHQrBdFxqZBpeQ603lRnGCd2YLXO3XHCW3Tp0fMzG3Vcqu0WUZTNJEZwA/ti0bsd6L+MN+3A812BX16jS0liE11NtJtAwTtRLuqVi6j6sON7DG4rgMkTDLsaiow+COJZuLR62sY8LbRHqMyAzdbkw00mR9Lpj9PTwPl5c4HGgiZS/mzBb7wX7Lbi7rdctOcoluq8RtcL059QW8jstlA/6W4Eq17/yfo/8gtk5gi9Jq0v44hV3+ssQa22XqlAn2xmrt8Ocoj/c+Eva8JULXd/G0hFm5rGEv7HMfdg1ZffHGWKaUDvWqsByH/bkvDthiPiR7QikAFciC3UOhITBjC+8zMCTE2Qukr6ewSPiJrmdIqwW0lqOpEdX52z0amy2XseVR92aDjmy7tUfn/HTNo6EKXdcat0pu1OkEUVIqYtXI/ZqmLSAepQxCa2c2ZL5oSbzl2sm8DFZq2IOviwSFlBlvnNbsEw/9wmJdmGkdNH577oSaWhxmVSKDRVqnE="
 after_success:
   - bundle exec codeclimate-test-reporter
 before_script:
   - cp config/database.yml.travis config/database.yml
   - psql -c 'create database travis_ci_test;' -U postgres
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 dist: trusty
 language: ruby
 rvm:
@@ -15,3 +18,5 @@ rvm:
 script:
   - bundle exec rails db:migrate RAILS_ENV=test
   - bundle exec rspec
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
