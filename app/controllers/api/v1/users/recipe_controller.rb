@@ -82,7 +82,7 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
         if cover.instance_of? String
           cover = base64_to_image cover
         end
-        @recipe.create_cover file: cover, user: @user
+        Image.create file: cover, user: @user, recipe: @recipe
       end
     end
 end
