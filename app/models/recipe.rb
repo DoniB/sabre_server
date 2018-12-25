@@ -32,10 +32,14 @@ class Recipe < ApplicationRecord
     ),
     using: {
         tsearch: {
-            dictionary: "portuguese"
+            dictionary: "portuguese",
+            prefix: true
         },
         dmetaphone: {
             any_word: true
+        },
+        trigram: {
+            threshold: 0.3
         }
     },
     ignoring: :accents

@@ -196,4 +196,16 @@ RSpec.describe Recipe, type: :model do
     expect(result).to_not be_nil
     expect(result.count).to eq(1)
   end
+
+  it "s search scope use trigram" do
+    create(:recipe, name: "receitas caseiras", ingredients: "banana maçã")
+
+    test_words = %w(banana maçã cazeiras reseitas bunana bannana)
+
+    test_words.each do |word|
+      result = Recipe.search word
+      expect(result).to_not be_nil
+      expect(result.count).to eq(1)
+    end
+  end
 end
