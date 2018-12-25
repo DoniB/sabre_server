@@ -171,4 +171,17 @@ RSpec.describe Recipe, type: :model do
     expect(result.count).to eq(1)
     expect(result.first.id).to eq(recipe.id)
   end
+
+  it "s search scope ignore accents" do
+    create(:recipe, name: "receitas caseiras", ingredients: "maçâ")
+    create(:recipe, name: "receitas caseiras", ingredients: "maca")
+
+    result = Recipe.search "maca"
+    expect(result).to_not be_nil
+    expect(result.count).to eq(2)
+
+    result = Recipe.search "maçã"
+    expect(result).to_not be_nil
+    expect(result.count).to eq(2)
+  end
 end

@@ -34,7 +34,8 @@ class Recipe < ApplicationRecord
         tsearch: {
             dictionary: "portuguese"
         }
-    }
+    },
+    ignoring: :accents
   )
 
   def as_json(options = {})
