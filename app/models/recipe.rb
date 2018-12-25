@@ -33,6 +33,9 @@ class Recipe < ApplicationRecord
     using: {
         tsearch: {
             dictionary: "portuguese"
+        },
+        dmetaphone: {
+            any_word: true
         }
     },
     ignoring: :accents

@@ -184,4 +184,16 @@ RSpec.describe Recipe, type: :model do
     expect(result).to_not be_nil
     expect(result.count).to eq(2)
   end
+
+  it "s search scope use fuzzy" do
+    create(:recipe, name: "receitas caseiras", ingredients: "Geoff")
+
+    result = Recipe.search "Geoff"
+    expect(result).to_not be_nil
+    expect(result.count).to eq(1)
+
+    result = Recipe.search "Jeff"
+    expect(result).to_not be_nil
+    expect(result.count).to eq(1)
+  end
 end
