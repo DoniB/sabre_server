@@ -33,7 +33,8 @@ class Recipe < ApplicationRecord
     using: {
         tsearch: {
             dictionary: "portuguese",
-            prefix: true
+            prefix: true,
+            tsvector_column: "tsv"
         },
         dmetaphone: {
             any_word: true

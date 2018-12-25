@@ -70,3 +70,27 @@ RSpec.configure do |config|
     end
   end
 end
+
+Recipe
+class Recipe
+  pg_search_scope(
+    :search_uncached,
+      against: %i(
+      name
+      ingredients
+    ),
+      using: {
+          tsearch: {
+              dictionary: "portuguese",
+              prefix: true
+          },
+          dmetaphone: {
+              any_word: true
+          },
+          trigram: {
+              threshold: 0.3
+          }
+      },
+      ignoring: :accents
+  )
+end

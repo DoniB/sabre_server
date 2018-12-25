@@ -337,7 +337,8 @@ CREATE TABLE public.recipes (
     status smallint DEFAULT 0,
     average_stars integer DEFAULT 0,
     category_id bigint,
-    cover_id bigint
+    cover_id bigint,
+    tsv tsvector
 );
 
 
@@ -702,6 +703,13 @@ CREATE INDEX index_recipes_on_cover_id ON public.recipes USING btree (cover_id);
 
 
 --
+-- Name: index_recipes_on_tsv; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_recipes_on_tsv ON public.recipes USING gin (tsv);
+
+
+--
 -- Name: index_recipes_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -713,6 +721,13 @@ CREATE INDEX index_recipes_on_user_id ON public.recipes USING btree (user_id);
 --
 
 CREATE INDEX index_secure_tokens_on_user_id ON public.secure_tokens USING btree (user_id);
+
+
+--
+-- Name: recipes tsvectorupdate; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER tsvectorupdate BEFORE INSERT OR UPDATE ON public.recipes FOR EACH ROW EXECUTE PROCEDURE tsvector_update_trigger('tsv', 'pg_catalog.portuguese', 'name', 'ingredients');
 
 
 --
@@ -748,6 +763,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181221052458'),
 ('20181225144823'),
 ('20181225152601'),
-('20181225152621');
+('20181225152621'),
+('20181225201832');
 
 

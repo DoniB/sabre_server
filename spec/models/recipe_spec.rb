@@ -208,4 +208,25 @@ RSpec.describe Recipe, type: :model do
       expect(result.count).to eq(1)
     end
   end
+
+  it "s search scope has cache" do
+    50.times { create(:recipe) }
+    test_words = Recipe.select(:name, :id).map { |r| r.name }
+
+    start_time = Time.now
+    test_words.each do |word|
+      result = Recipe.search_uncached word
+      expect(result).to_not be_nil
+    end
+    total_uncached_time = Time.now - start_time
+
+    start_time = Time.now
+    test_words.each do |word|
+      result = Recipe.search word
+      expect(result).to_not be_nil
+    end
+    total_cached_time = Time.now - start_time
+
+    expect(total_cached_time).to be < total_uncached_time
+  end
 end
