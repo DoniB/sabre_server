@@ -433,6 +433,36 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
       expect(response.status).to eq(200)
     end
 
+    it "should paginate the user`s recipes" do
+      user = create(:user)
+      token = user.secure_tokens.create
+      recipe = create(:recipe, user: user)
+      19.times { create(:recipe, user: user) }
+      expect(user.recipes.count).to eq(20)
+
+      14.times { create(:recipe, user: user) }
+      recipe2 = create(:recipe, user: user)
+      expect(user.recipes.count).to eq(35)
+
+      request.headers["X-Secure-Token"] = token.token
+
+      get :index, params: { page: 0 }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(20)
+      expect(json[0]["user_id"]).to eq(user.id)
+      expect(json.map { |r| r["id"] }).to_not include recipe.id
+      expect(json.map { |r| r["id"] }).to include recipe2.id
+      expect(response.status).to eq(200)
+
+      get :index, params: { page: 1 }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(15)
+      expect(json[0]["user_id"]).to eq(user.id)
+      expect(json.map { |r| r["id"] }).to include recipe.id
+      expect(json.map { |r| r["id"] }).to_not include recipe2.id
+      expect(response.status).to eq(200)
+    end
+
     it "should not return another user`s recipes" do
       user = create(:user)
       token = user.secure_tokens.create

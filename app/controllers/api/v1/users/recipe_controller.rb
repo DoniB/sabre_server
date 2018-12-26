@@ -54,13 +54,8 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
 
     def query_recipe
       if @user.is_admin?
-        waiting_activation = params["status"] == "waiting_activation"
-        all_users = params["all_users"] == "1"
-
-        recipes = all_users ? Recipe.all : @user.recipes
-        recipes = recipes.waiting_activation if waiting_activation
-
-        recipes
+        recipes = params[:all_users] == "1" ? Recipe.all : @user.recipes
+        recipes = recipes.waiting_activation if params[:status] == "waiting_activation"
       else
         recipes = @user.recipes
       end
@@ -68,7 +63,7 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
       query = params["q"]
       recipes = recipes.search(query) if query
 
-      recipes
+      recipes.page(params[:page])
     end
 
     def can_edit?(recipe)
