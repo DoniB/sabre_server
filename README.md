@@ -1,6 +1,7 @@
-# SABRE_SERVER [![Build Status](https://travis-ci.org/DoniB/sabre_server.svg?branch=master)](https://travis-ci.org/DoniB/sabre_server)
-
 # README
+[![Build Status](https://travis-ci.org/DoniB/sabre_server.svg?branch=master)](https://travis-ci.org/DoniB/sabre_server)
+[![Maintainability](https://api.codeclimate.com/v1/badges/e5ef7a4e22677fbf4cea/maintainability)](https://codeclimate.com/github/DoniB/sabre_server/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/e5ef7a4e22677fbf4cea/test_coverage)](https://codeclimate.com/github/DoniB/sabre_server/test_coverage)
 
 Repositório oficial SABRE_server.
 
