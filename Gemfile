@@ -54,6 +54,7 @@ group :development do
   gem "guard-reek"
   gem "guard-rspec", require: false
   gem "guard-rubocop"
+  gem "guard-bundler-audit"
   gem "listen", ">= 3.0.5", "< 3.2"
   gem "rubocop-rails_config"
   gem "rubocop-rspec"

@@ -87,3 +87,7 @@ guard "reek" do
   watch(%r{.+\.rb$})
   watch(".reek")
 end
+
+guard "bundler_audit", run_on_start: true do
+  watch("Gemfile.lock")
+end
