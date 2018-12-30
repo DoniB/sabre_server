@@ -6,7 +6,7 @@ class Api::V1::Users::FavoritesController < Api::V1::ApiController
   def index
     result = {}
     if @user
-      result = @user.recipes_favorites
+      result = @user.recipes_favorites.eager_load(:user, :cover)
     end
     render json: result
   end

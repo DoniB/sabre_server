@@ -6,7 +6,7 @@ class Api::V1::CommentsController < Api::V1::ApiController
   before_action :set_recipe
 
   def index
-    render json: @recipe.comments.active
+    render json: @recipe.comments.eager_load(:user).active
   end
 
   def create

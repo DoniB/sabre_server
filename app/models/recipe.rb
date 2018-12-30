@@ -47,9 +47,8 @@ class Recipe < ApplicationRecord
   )
 
   def as_json(options = {})
-    ret = super(options).merge(
-      owner: user.username
-    )
+    ret = super(options)
+    ret[:owner] = user.username if self.user_id
     if self.cover&.file&.image?
       ret[:cover] = Rails.application.routes.url_helpers.rails_representation_url cover.file.variant(resize: "600x450")
     end

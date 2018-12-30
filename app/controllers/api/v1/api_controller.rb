@@ -27,7 +27,7 @@ module Api::V1
     end
 
     def load_user
-      @user = SecureToken.active.find_by(token: request.headers["X-Secure-Token"])&.user
+      @user = SecureToken.active.eager_load(:user).find_by(token: request.headers["X-Secure-Token"])&.user
       @user = nil if @user && !@user.active
     end
 

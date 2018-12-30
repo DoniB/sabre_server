@@ -16,13 +16,18 @@ class Comment < ApplicationRecord
     )
   end
 
+  def deleted_by_user_id=(usr)
+    self.deleted_at = Time.now
+    super(usr)
+  end
+
   def deleted_by_user=(usr)
     self.deleted_at = Time.now
     super(usr)
   end
 
   def soft_delete(del_user)
-    self.deleted_by_user = del_user
+    self.deleted_by_user_id = del_user.id
     save
   end
 end
