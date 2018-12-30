@@ -53,17 +53,25 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
     end
 
     def query_recipe
-      if @user.is_admin?
-        recipes = params[:all_users] == "1" ? Recipe.all : @user.recipes
-        recipes = recipes.waiting_activation if params[:status] == "waiting_activation"
-      else
-        recipes = @user.recipes
-      end
+      recipes = user_recipes
 
       query = params["q"]
       recipes = recipes.search(query) if query
 
       recipes.page(params[:page])
+    end
+
+    def user_recipes
+      if @user.is_admin?
+        admin_recipes
+      else
+        @user.recipes
+      end
+    end
+
+    def admin_recipes
+      recipes = params[:all_users] == "1" ? Recipe.all : @user.recipes
+      params[:status] == "waiting_activation" ? recipes.waiting_activation : recipes
     end
 
     def can_edit?(recipe)
@@ -73,7 +81,7 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
 
     def save_cover
       cover = params[:cover]
-      unless cover.nil?
+      if cover
         if cover.instance_of? String
           cover = base64_to_image cover
         end

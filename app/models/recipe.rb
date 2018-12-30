@@ -21,8 +21,8 @@ class Recipe < ApplicationRecord
 
   scope :active, -> { where("status = ?", RecipeStatus::ACTIVE) }
   scope :waiting_activation, -> { where("status = ?", RecipeStatus::WAITING_ACTIVATION) }
-  scope :page, -> (p = 0) { limit(PAGE_LIMIT).offset(p.to_i * PAGE_LIMIT) }
-  scope :category, -> (c) { where("category_id = ?", c) }
+  scope :page, -> (pg = 0) { limit(PAGE_LIMIT).offset(pg.to_i * PAGE_LIMIT) }
+  scope :category, -> (cat) { where("category_id = ?", cat) }
 
   pg_search_scope(
     :search,

@@ -17,7 +17,7 @@ class Api::V1::FavoritesController < Api::V1::ApiController
     if @user && !@favorite && recipe
       @favorite = @user.favorites.create recipe: recipe
     end
-    render json: { favorite: !!@favorite }
+    render json: favorite_json
   end
 
   private
@@ -25,5 +25,9 @@ class Api::V1::FavoritesController < Api::V1::ApiController
     def set_favorite
       load_user
       @favorite = @user&.favorites&.find_by recipe_id: params["recipe_id"]
+    end
+
+    def favorite_json
+      { favorite: !!@favorite }
     end
 end

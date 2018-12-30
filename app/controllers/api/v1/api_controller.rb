@@ -32,22 +32,29 @@ module Api::V1
     end
 
     def base64_to_image(text)
-      hash = {}
-      if text.start_with? "data:image/jpeg"
-        hash[:filename] = "cover.jpg"
-        hash[:type] = "image/jpeg"
-      elsif texto.start_with? "data:image/png"
-        hash[:filename] = "cover.jpg"
-        hash[:type] = "image/png"
-      else
-        raise "Invalid image data"
-      end
-      tempfile = Tempfile.new("test_temp")
-      tempfile.binmode
-      tempfile.write(Base64.decode64 text.split(",")[1])
-      tempfile.close
-      hash[:tempfile] = tempfile
+      hash = get_image_hash text
+      hash[:tempfile] = get_temp_file(text.split(",")[1])
       ActionDispatch::Http::UploadedFile.new hash
     end
   end
+
+  private
+
+    def get_image_hash(text)
+      if text.start_with? "data:image/jpeg"
+        { filename: "cover.jpg", type: "image/jpeg" }
+      elsif texto.start_with? "data:image/png"
+        { filename: "cover.jpg", type: "image/png" }
+      else
+        raise "Invalid image data"
+      end
+    end
+
+    def self.get_temp_file(base64_encoded_text)
+      tempfile = Tempfile.new("test_temp")
+      tempfile.binmode
+      tempfile.write(Base64.decode64 base64_encoded_text)
+      tempfile.close
+      tempfile
+    end
 end

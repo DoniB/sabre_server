@@ -20,11 +20,12 @@ class Api::V1::RatingsController < Api::V1::ApiController
   end
 
   def gen_rating
+    stars = params[:stars]
     if @rating
-      @rating.stars = params[:stars]
+      @rating.stars = stars
       return @rating
     end
-    @user.ratings.build recipe: @recipe, stars: params[:stars]
+    @user.ratings.build recipe: @recipe, stars: stars
   end
 
   private

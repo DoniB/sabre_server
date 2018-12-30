@@ -8,11 +8,11 @@ class Image < ApplicationRecord
   belongs_to :user
   belongs_to :recipe, optional: true
 
-  def recipe=(r)
-    return if r.nil?
-    r.cover = self
-    r.save
-    super(r)
+  def recipe=(rcpt)
+    return unless rcpt
+    rcpt.cover = self
+    rcpt.save
+    super(rcpt)
   end
 
   private

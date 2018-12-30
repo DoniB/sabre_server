@@ -16,7 +16,6 @@ class Api::V1::SignInsController < Api::V1::ApiController
   private
     def load_user
       user = User.actives.find_by email: params[:email]
-      return nil if user.nil? || !user.authenticate(params[:password])
-      user
+      user && user.authenticate(params[:password]) ? user : nil
     end
 end

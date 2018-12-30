@@ -36,6 +36,14 @@ directories:
       enabled: false
     UncommunicativeModuleName:
       enabled: false
+    NilCheck:
+      exclude:
+        - "FavoritesController"
+        - "CommentsController"
+        - "ApiController"
+    MissingSafeMethod:
+      exclude:
+        - "ApiController"
 
   "lib/":
     IrresponsibleModule:
@@ -70,3 +78,10 @@ directories:
       enabled: false
     UtilityFunction:
       enabled: false
+
+  "app/models":
+    IrresponsibleModule:
+      enabled: false
+    NilCheck:
+      exclude:
+        - "Recipe"

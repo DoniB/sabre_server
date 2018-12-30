@@ -17,12 +17,20 @@ class Api::V1::RecipesController < Api::V1::ApiController
   private
 
     def get_recipes
-      recipes = Recipe.active.page(params[:page])
+      @recipes = Recipe.active.page(params[:page])
+      filter_recipes_by_query
+      filter_recipes_by_category
+      @recipes
+    end
+
+    def filter_recipes_by_query
       query = params[:q]
-      recipes = recipes.search(query) unless query.nil?
+      @recipes = @recipes.search(query) if query
+    end
+
+    def filter_recipes_by_category
       category = params[:category]
-      recipes = recipes.category(category) if !category.nil? && category.to_i > 0
-      recipes
+      @recipes = @recipes.category(category) if category.to_i > 0
     end
 
     def set_recipe

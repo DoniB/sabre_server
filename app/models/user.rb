@@ -26,7 +26,7 @@ class User < ApplicationRecord
 
   scope :admins, -> { where("is_admin = ?", true) }
   scope :actives, -> { where("active = ?", true) }
-  scope :page, -> (p = 0) { limit(USERS_PER_PAGE).offset(p * USERS_PER_PAGE) }
+  scope :page, -> (pg = 0) { limit(USERS_PER_PAGE).offset(pg.to_i * USERS_PER_PAGE) }
   scope :total_pages, -> { (count / USERS_PER_PAGE.to_f).ceil }
 
   pg_search_scope(
