@@ -45,10 +45,12 @@ group :development, :test do
   gem "brakeman"
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
   gem "rspec-rails", "~> 3.8"
+  gem "traceroute"
 end
 
 group :development do
   gem "guard-brakeman"
+  gem "guard-reek"
   gem "guard-rspec", require: false
   gem "guard-rubocop"
   gem "listen", ">= 3.0.5", "< 3.2"

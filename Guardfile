@@ -82,3 +82,8 @@ guard "brakeman", run_on_start: true do
   watch(%r{^lib/.+\.rb$})
   watch("Gemfile")
 end
+
+guard "reek" do
+  watch(%r{.+\.rb$})
+  watch(".reek")
+end

@@ -54,7 +54,7 @@ class Api::V1::Adm::UsersController < Api::V1::ApiController
       @users = User.page @current_page
       q = params[:q]
 
-      if q.nil?
+      unless q
         @total_pages = User.total_pages
       else
         @users = @users.search(q)
