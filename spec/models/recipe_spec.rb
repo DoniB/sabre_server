@@ -210,7 +210,7 @@ RSpec.describe Recipe, type: :model do
   end
 
   it "s search scope has cache" do
-    50.times { create(:recipe) }
+    500.times { create(:recipe) }
     test_words = Recipe.select(:name, :id).map { |r| r.name }
 
     start_time = Time.now

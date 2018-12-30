@@ -10,6 +10,7 @@ require "rspec/rails"
 # Add additional requires below this line. Rails is not loaded until this point!
 
 require "support/factory_bot"
+require "brakeman"
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -68,6 +69,20 @@ RSpec.configure do |config|
     if Rails.env.test?
       FileUtils.rm_rf(Dir["#{Rails.root.join("tmp/storage")}/*"])
     end
+  end
+
+  config.after(:suite) do
+    example_group = RSpec.describe("Brakeman Issues")
+    example = example_group.example("must have 0 Critical Security Issues") do
+      res = Brakeman.run app_path: "#{Rails.root}", output_files: ["brakeman.html"]
+      serious = res.warnings.count { |w| w.confidence == 0 }
+      puts "\n\nBrakeman Result:\n  Critical Security Issues = #{serious}"
+      expect(serious).to eq 0
+    end
+    puts "\nBrakeman Report available here: ./brakeman.html"
+    example_group.run
+    passed = example.execution_result.status == :passed
+    RSpec.configuration.reporter.example_failed example unless passed
   end
 end
 
