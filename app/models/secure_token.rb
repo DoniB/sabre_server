@@ -17,8 +17,8 @@ class SecureToken < ApplicationRecord
 
 private
   def initialize_attributes
-    self.token = SecureToken.generate_token unless token
-    self.expires = 30.days.from_now unless expires
-    self.created_at = Time.now unless created_at
+    self.token ||= SecureToken.generate_token
+    self.expires ||= 30.days.from_now
+    self.created_at ||= Time.now
   end
 end
