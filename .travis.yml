@@ -11,6 +11,7 @@ before_script:
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
 - "rm Gemfile.lock"
+- "ls"
 dist: trusty
 language: ruby
 rvm:
