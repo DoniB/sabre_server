@@ -3,6 +3,10 @@
 require "faker"
 
 FactoryBot.define do
+  factory :ingredient do
+    name { Faker::Food.ingredient }
+  end
+
   factory :image do
     user { create :user }
     recipe { user.nil? ? create(:recipe) : create(:recipe, user: user) }

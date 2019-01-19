@@ -9,17 +9,17 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+-- Name: citext; Type: EXTENSION; Schema: -; Owner: -
 --
 
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+-- Name: EXTENSION citext; Type: COMMENT; Schema: -; Owner: -
 --
 
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings';
 
 
 --
@@ -290,6 +290,37 @@ ALTER SEQUENCE public.images_id_seq OWNED BY public.images.id;
 
 
 --
+-- Name: ingredients; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ingredients (
+    id bigint NOT NULL,
+    name public.citext,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: ingredients_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ingredients_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ingredients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ingredients_id_seq OWNED BY public.ingredients.id;
+
+
+--
 -- Name: ratings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -481,6 +512,13 @@ ALTER TABLE ONLY public.images ALTER COLUMN id SET DEFAULT nextval('public.image
 
 
 --
+-- Name: ingredients id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ingredients ALTER COLUMN id SET DEFAULT nextval('public.ingredients_id_seq'::regclass);
+
+
+--
 -- Name: ratings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -562,6 +600,14 @@ ALTER TABLE ONLY public.favorites
 
 ALTER TABLE ONLY public.images
     ADD CONSTRAINT images_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ingredients ingredients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ingredients
+    ADD CONSTRAINT ingredients_pkey PRIMARY KEY (id);
 
 
 --
@@ -764,6 +810,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181225144823'),
 ('20181225152601'),
 ('20181225152621'),
-('20181225201832');
+('20181225201832'),
+('20190119174136');
 
 
