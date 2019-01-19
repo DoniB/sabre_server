@@ -10,6 +10,7 @@ before_script:
   > ./cc-test-reporter
 - chmod +x ./cc-test-reporter
 - "./cc-test-reporter before-build"
+- "bundle install"
 dist: trusty
 language: ruby
 rvm:
