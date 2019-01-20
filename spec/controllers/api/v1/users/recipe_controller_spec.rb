@@ -201,6 +201,69 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
         expect(user.recipes.count).to eq(1)
       end
     end
+
+    it "should not set recipe_list when visitor" do
+      recipe = build(:recipe)
+      ingredient_ids = []
+      5.times { ingredient_ids << create(:ingredient).id }
+      params = recipe.attributes
+      params[:ingredient_ids] = ingredient_ids
+
+      post :create, params: params
+
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_nil
+      expect(json["error"]).to_not be_nil
+      expect(response.status).to eq(403)
+      expect(Recipe.first).to be_nil
+    end
+
+    it "should not set recipe_list when non admin user" do
+      user = create(:user)
+      token = user.secure_tokens.create
+
+      recipe = build(:recipe)
+      ingredient_ids = []
+      5.times { ingredient_ids << create(:ingredient).id }
+      params = recipe.attributes
+      params[:ingredient_ids] = ingredient_ids
+
+      request.headers["X-Secure-Token"] = token.token
+      post :create, params: params
+
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_nil
+      expect(json["error"]).to be_nil
+      expect(response.status).to eq(201)
+      user_recipe = Recipe.first
+      expect(user_recipe).to_not be_nil
+      expect(user_recipe.ingredients_list_ids).to be_empty
+    end
+
+    it "should set recipe_list when admin" do
+      user = create(:admin)
+      token = user.secure_tokens.create
+
+      recipe = build(:recipe)
+      ingredient_ids = []
+      5.times { ingredient_ids << create(:ingredient).id }
+      params = recipe.attributes
+      params[:ingredient_ids] = ingredient_ids
+
+      request.headers["X-Secure-Token"] = token.token
+      post :create, params: params
+
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_nil
+      expect(json["error"]).to be_nil
+      expect(response.status).to eq(201)
+      user_recipe = Recipe.first
+      expect(user_recipe).to_not be_nil
+      expect(user_recipe.ingredients_list_ids).to_not be_empty
+      ingredient_ids.each { |i|
+        expect(user_recipe.ingredients_list_ids).to include(i)
+      }
+    end
   end
 
   describe "PATCH api/v1/users/recipe#update" do
@@ -394,6 +457,89 @@ RSpec.describe Api::V1::Users::RecipeController, type: :controller do
         expect(json["cover_id"]).to be_nil
         expect(response.status).to eq(202)
       end
+    end
+
+    it "should not set recipe_list when visitor" do
+      recipe = create(:recipe)
+      ingredient_ids = []
+      5.times { ingredient_ids << create(:ingredient).id }
+      params = {
+        ingredient_ids: ingredient_ids,
+        id: recipe.id
+      }
+
+      patch :update, params: params
+
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_nil
+      expect(json["error"]).to_not be_nil
+      expect(response.status).to eq(403)
+      expect(Recipe.first).to_not be_nil
+      expect(Recipe.count).to eq(1)
+      expect(Recipe.first.ingredients_list_ids).to be_empty
+    end
+
+    it "should not set recipe_list when non admin user" do
+      recipe = create(:recipe)
+      user = recipe.user
+      token = user.secure_tokens.create
+
+      ingredient_ids = []
+      5.times { ingredient_ids << create(:ingredient).id }
+      params = {
+          ingredient_ids: ingredient_ids,
+          id: recipe.id
+      }
+
+      request.headers["X-Secure-Token"] = token.token
+      patch :update, params: params
+
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_nil
+      expect(json["error"]).to be_nil
+      expect(response.status).to eq(202)
+      user_recipe = Recipe.first
+      expect(user_recipe).to_not be_nil
+      expect(user_recipe.ingredients_list_ids).to be_empty
+    end
+
+    it "should set recipe_list when admin" do
+      recipe = create(:recipe)
+      user = recipe.user
+      user.update(is_admin: true)
+      token = user.secure_tokens.create
+
+      ingredient_ids = []
+      5.times { ingredient_ids << create(:ingredient).id }
+      params = {
+          ingredient_ids: ingredient_ids,
+          id: recipe.id
+      }
+
+      expect(recipe.ingredients_list_ids).to be_empty
+
+      request.headers["X-Secure-Token"] = token.token
+      patch :update, params: params
+
+      json = JSON.parse(response.body)
+      expect(json["errors"]).to be_nil
+      expect(json["error"]).to be_nil
+      expect(response.status).to eq(202)
+      user_recipe = Recipe.first
+      expect(user_recipe).to_not be_nil
+      expect(user_recipe.ingredients_list_ids).to_not be_empty
+      ingredient_ids.each { |i|
+        expect(user_recipe.ingredients_list_ids).to include(i)
+      }
+
+      ingredient_id = ingredient_ids.pop
+      params[:ingredient_ids] = [ingredient_id]
+      patch :update, params: params
+      user_recipe.reload
+      expect(user_recipe.ingredients_list_ids).to include(ingredient_id)
+      ingredient_ids.each { |i|
+        expect(user_recipe.ingredients_list_ids).to_not include(i)
+      }
     end
   end
 

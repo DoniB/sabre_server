@@ -20,6 +20,7 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
     @recipe = @user.recipes.build recipe_params
     if @recipe.save
       save_cover
+      save_ingredients
       render json: @recipe, status: :created
     else
       render json: { errors: @recipe.errors },
@@ -34,6 +35,7 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
 
     if @recipe.update(recipe_params)
       save_cover
+      save_ingredients
       render json: @recipe, status: :accepted
     else
       render json: @recipe.errors, status: :unprocessable_entity
@@ -86,6 +88,13 @@ class Api::V1::Users::RecipeController < Api::V1::ApiController
           cover = base64_to_image cover
         end
         Image.create file: cover, user: @user, recipe: @recipe
+      end
+    end
+
+    def save_ingredients
+      ingredients_list_ids = params[:ingredient_ids]
+      if @user.is_admin? && ingredients_list_ids.instance_of?(Array)
+        @recipe.ingredients_list_ids = ingredients_list_ids.map(&:to_i)
       end
     end
 end
