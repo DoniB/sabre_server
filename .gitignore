@@ -25,4 +25,3 @@
 coverage/*
 /config/secrets/*
 brakeman.html
-Gemfile.lock
