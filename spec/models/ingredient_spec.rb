@@ -18,4 +18,13 @@ RSpec.describe Ingredient, type: :model do
     ingredient = build(:ingredient, name: nil)
     expect(ingredient).to_not be_valid
   end
+
+  it "has recipes" do
+    ingredient = create(:ingredient)
+    expect(ingredient.recipes.count).to eq(0)
+    recipe = create(:recipe)
+    ingredient.recipes << recipe
+    expect(ingredient.recipes.count).to eq(1)
+    expect(recipe.ingredients_list.count).to eq(1)
+  end
 end

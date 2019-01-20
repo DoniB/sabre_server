@@ -229,4 +229,14 @@ RSpec.describe Recipe, type: :model do
 
     expect(total_cached_time).to be < total_uncached_time
   end
+
+  it "has ingredients" do
+    recipe = create :recipe
+    ingredient = create(:ingredient)
+    expect(recipe.ingredients_list.count).to eq(0)
+    expect(ingredient.recipes.count).to eq(0)
+    recipe.ingredients_list << ingredient
+    expect(recipe.ingredients_list.count).to eq(1)
+    expect(ingredient.recipes.count).to eq(1)
+  end
 end

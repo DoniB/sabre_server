@@ -321,6 +321,36 @@ ALTER SEQUENCE public.ingredients_id_seq OWNED BY public.ingredients.id;
 
 
 --
+-- Name: ingredients_recipes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ingredients_recipes (
+    id bigint NOT NULL,
+    recipe_id bigint,
+    ingredient_id bigint
+);
+
+
+--
+-- Name: ingredients_recipes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.ingredients_recipes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ingredients_recipes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.ingredients_recipes_id_seq OWNED BY public.ingredients_recipes.id;
+
+
+--
 -- Name: ratings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -519,6 +549,13 @@ ALTER TABLE ONLY public.ingredients ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: ingredients_recipes id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ingredients_recipes ALTER COLUMN id SET DEFAULT nextval('public.ingredients_recipes_id_seq'::regclass);
+
+
+--
 -- Name: ratings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -608,6 +645,14 @@ ALTER TABLE ONLY public.images
 
 ALTER TABLE ONLY public.ingredients
     ADD CONSTRAINT ingredients_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ingredients_recipes ingredients_recipes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ingredients_recipes
+    ADD CONSTRAINT ingredients_recipes_pkey PRIMARY KEY (id);
 
 
 --
@@ -721,6 +766,27 @@ CREATE INDEX index_images_on_user_id ON public.images USING btree (user_id);
 
 
 --
+-- Name: index_ingredients_recipes_on_ingredient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_ingredients_recipes_on_ingredient_id ON public.ingredients_recipes USING btree (ingredient_id);
+
+
+--
+-- Name: index_ingredients_recipes_on_recipe_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_ingredients_recipes_on_recipe_id ON public.ingredients_recipes USING btree (recipe_id);
+
+
+--
+-- Name: index_ingredients_recipes_on_recipe_id_and_ingredient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_ingredients_recipes_on_recipe_id_and_ingredient_id ON public.ingredients_recipes USING btree (recipe_id, ingredient_id);
+
+
+--
 -- Name: index_ratings_on_recipe_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -811,6 +877,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20181225152601'),
 ('20181225152621'),
 ('20181225201832'),
-('20190119174136');
+('20190119174136'),
+('20190119185636');
 
 

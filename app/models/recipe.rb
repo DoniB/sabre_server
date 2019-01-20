@@ -16,6 +16,7 @@ class Recipe < ApplicationRecord
   belongs_to :cover, class_name: "Image", optional: true
   has_many :comments
   has_many :ratings
+  has_and_belongs_to_many :ingredients_list, class_name: "Ingredient"
 
   default_scope -> { order(id: :desc) }
 
