@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       resource :user, only: [:create, :show]
       resource :sign_in, only: [:create]
       resources :categories, only: [:index]
+      resources :ingredients
 
       namespace :users do
         resources :recipe, only: [:create, :update, :index, :show]

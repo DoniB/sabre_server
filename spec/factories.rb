@@ -4,7 +4,7 @@ require "faker"
 
 FactoryBot.define do
   factory :ingredient do
-    name { Faker::Food.ingredient }
+    name { Faker::Food.ingredient + Faker::Number.rand.to_s }
   end
 
   factory :image do

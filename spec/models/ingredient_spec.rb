@@ -27,4 +27,14 @@ RSpec.describe Ingredient, type: :model do
     expect(ingredient.recipes.count).to eq(1)
     expect(recipe.ingredients_list.count).to eq(1)
   end
+
+  it "has search scope" do
+    ingredient = create(:ingredient, name: "ingredients")
+    create(:ingredient, name: "another")
+    result = Ingredient.search "ingredient"
+
+    expect(result).to_not be_nil
+    expect(result.count).to eq(1)
+    expect(result.first.id).to eq(ingredient.id)
+  end
 end
