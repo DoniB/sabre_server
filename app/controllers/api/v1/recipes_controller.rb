@@ -17,10 +17,15 @@ class Api::V1::RecipesController < Api::V1::ApiController
   private
 
     def get_recipes
+      return get_recipes_by_ingredients if params[:by_ingredients] && params[:q]
       @recipes = Recipe.active.page(params[:page])
       filter_recipes_by_query
       filter_recipes_by_category
       @recipes
+    end
+
+    def get_recipes_by_ingredients
+      Recipe.by_ingredients_list params[:q]
     end
 
     def filter_recipes_by_query

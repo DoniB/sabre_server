@@ -143,6 +143,50 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
 
       expect(recipe.id).to_not eq(recipe2.id)
     end
+
+    it "get recipes by ingredients" do
+      ingredients_for_search = []
+      [
+          "banana",
+          "alho",
+          "ovo",
+          "frango",
+          "leite condensado"
+      ].each { |name| ingredients_for_search << create(:ingredient, name: name) }
+
+      ingredients = []
+      [
+          "ovomaltine",
+          "creme de leite",
+          "maça",
+          "cebola",
+          "macarrão"
+      ].each { |name| ingredients << create(:ingredient, name: name) }
+
+      expect(Ingredient.count).to eq(10)
+      (1..ingredients.size).each { |size|
+        ingredients.combination(size).each { |ingredients_combination|
+          create(:recipe, ingredients_list: ingredients_combination)
+        }
+      }
+
+      params = {
+          q: Recipe.by_ingredients_list(ingredients_for_search.map(&:name).join(", ")),
+          by_ingredients: "t"
+      }
+      get :index, params: params
+      result = JSON.parse(response.body)
+      expect(result.size).to eq(0)
+      recipes = []
+
+      (1..5).each { |total|
+        recipes << create(:recipe, status: RecipeStatus::ACTIVE, ingredients_list: ingredients_for_search[0, total])
+        get :index, params: params
+        result = JSON.parse(response.body)
+        expect(result.size).to eq(total)
+        expect(result.map { |r| r["id"] }.sort).to eq(recipes.map(&:id).sort)
+      }
+    end
   end
 
   describe "GET api/v1/recipes#show" do
