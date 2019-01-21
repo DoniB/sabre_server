@@ -247,4 +247,43 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
       expect(response.status).to eq(404)
     end
   end
+
+  describe "GET api/v1/recipes#show" do
+    it "returns recipes ingredients" do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      get :ingredients, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_truthy
+      expect(response.status).to eq(200)
+
+      get :ingredients, params: { id: recipe.id + 1 }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_truthy
+      expect(response.status).to eq(404)
+
+      ingredient = create(:ingredient)
+      recipe.ingredients_list << ingredient
+      get :ingredients, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_falsey
+      expect(json.size).to eq(1)
+      expect(json.first["id"]).to eq(ingredient.id)
+      expect(json.first["name"]).to eq(ingredient.name)
+      expect(response.status).to eq(200)
+
+      recipe.ingredients_list << create(:ingredient)
+      get :ingredients, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_falsey
+      expect(json.size).to eq(2)
+      expect(response.status).to eq(200)
+
+      create(:ingredient)
+      get :ingredients, params: { id: recipe.id }
+      json = JSON.parse(response.body)
+      expect(json.empty?).to be_falsey
+      expect(json.size).to eq(2)
+      expect(response.status).to eq(200)
+    end
+  end
 end

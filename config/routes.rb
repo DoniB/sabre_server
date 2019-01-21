@@ -20,6 +20,7 @@ Rails.application.routes.draw do
       end
 
       resources :recipes, only: [:index, :show] do
+        get :ingredients, on: :member
         resources :comments, only: [:index, :create, :destroy]
         resource :rating, only: [:show, :create]
         resource :favorite, only: [:show, :create, :destroy]
