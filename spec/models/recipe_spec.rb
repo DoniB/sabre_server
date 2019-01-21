@@ -239,4 +239,41 @@ RSpec.describe Recipe, type: :model do
     expect(recipe.ingredients_list.count).to eq(1)
     expect(ingredient.recipes.count).to eq(1)
   end
+
+  it "search recipes by ingredients" do
+    ingredients_for_search = []
+    [
+        "banana",
+        "alho",
+        "ovo",
+        "frango",
+        "leite condensado"
+    ].each { |name| ingredients_for_search << create(:ingredient, name: name) }
+
+    ingredients = []
+    [
+        "ovomaltine",
+        "creme de leite",
+        "maça",
+        "cebola",
+        "macarrão"
+    ].each { |name| ingredients << create(:ingredient, name: name) }
+
+    expect(Ingredient.count).to eq(10)
+    (1..ingredients.size).each { |size|
+      ingredients.combination(size).each { |ingredients_combination|
+        create(:recipe, ingredients_list: ingredients_combination)
+      }
+    }
+
+    expect(Recipe.by_ingredients_list(ingredients_for_search.map(&:name).join(", ")).size).to eq(0)
+    recipes = []
+
+    (1..5).each { |total|
+      recipes << create(:recipe, ingredients_list: ingredients_for_search[0, total])
+      result = Recipe.by_ingredients_list(ingredients_for_search.map(&:name).join(", "))
+      expect(result.size).to eq(total)
+      expect(result.sort).to eq(recipes.sort)
+    }
+  end
 end
