@@ -250,7 +250,7 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
 
   describe "GET api/v1/recipes#show" do
     it "returns recipes ingredients" do
-      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
+      recipe = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
       get :ingredients, params: { id: recipe.id }
       json = JSON.parse(response.body)
       expect(json.empty?).to be_truthy

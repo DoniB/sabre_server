@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 class Api::V1::RecipesController < Api::V1::ApiController
-  before_action :set_recipe, only: [:show, :ingredients]
+  before_action :set_active_recipe, only: [:show]
+  before_action :set_recipe, only: [:ingredients]
 
   def index
     render json: get_recipes
@@ -45,8 +46,11 @@ class Api::V1::RecipesController < Api::V1::ApiController
       @recipes = @recipes.category(category) if category.to_i > 0
     end
 
+    def set_active_recipe
+      @recipe = Recipe.active.find_by(id: params[:id])
+    end
+
     def set_recipe
-      id = params[:id] || params[:recipe_id]
-      @recipe = Recipe.active.find_by(id: id)
+      @recipe = Recipe.find_by(id: params[:id])
     end
 end
