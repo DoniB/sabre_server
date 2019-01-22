@@ -3,8 +3,8 @@
 require "rails_helper"
 require "recipe_status"
 
-RSpec.describe Api::V1::RecipesController, type: :controller do
-  describe "GET api/v1/recipes#index" do
+RSpec.describe Api::V2::RecipesController, type: :controller do
+  describe "GET api/v2/recipes#index" do
     it "should send an empty json without an active recipes" do
       get :index
       json = JSON.parse(response.body)
@@ -189,104 +189,26 @@ RSpec.describe Api::V1::RecipesController, type: :controller do
         expect(result.size).to eq(total)
         expect(result.map { |r| r["id"] }.sort).to eq(recipes.map(&:id).sort)
       }
-    end
-  end
 
-  describe "GET api/v1/recipes#show" do
-    it "returns active recipes" do
-      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
-      get :show, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json["id"]).to eq(recipe.id)
 
-      recipe2 = create(:recipe, status: RecipeStatus::ACTIVE)
-      get :show, params: { id: recipe2.id }
-      json = JSON.parse(response.body)
-      expect(json["id"]).to eq(recipe2.id)
+      get :index, params: params
+      result = JSON.parse(response.body)
+      expect(result.size).to eq(5)
 
-      expect(recipe.id).to_not eq(recipe2.id)
-    end
+      20.times { create :recipe, status: RecipeStatus::ACTIVE, ingredients_list: [ingredients_for_search[0], ingredients[0] ] }
+      get :index, params: params
+      result = JSON.parse(response.body)
+      expect(result.size).to eq(5)
 
-    it "returns average_stars" do
-      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
-      get :show, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json["id"]).to eq(recipe.id)
-      expect(json["average_stars"]).to eq(0)
+      20.times { create :recipe, status: RecipeStatus::ACTIVE, ingredients_list: [ingredients_for_search.sample] }
+      get :index, params: params
+      result = JSON.parse(response.body)
+      expect(result.size).to eq(20)
 
-      recipe = create(:recipe, status: RecipeStatus::ACTIVE, average_stars: 5)
-      get :show, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json["id"]).to eq(recipe.id)
-      expect(json["average_stars"]).to eq(5)
-    end
-
-    it "do not returns recipes waiting activation" do
-      recipe = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
-      get :show, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_truthy
-      expect(response.status).to eq(404)
-
-      recipe2 = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
-      get :show, params: { id: recipe2.id }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_truthy
-      expect(response.status).to eq(404)
-
-      expect(recipe.id).to_not eq(recipe2.id)
-    end
-
-    it "do not returns any recipe when an invalid id is requested" do
-      get :show, params: { id: 0 }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_truthy
-      expect(response.status).to eq(404)
-
-      recipe = create(:recipe, status: RecipeStatus::ACTIVE)
-      get :show, params: { id: recipe.id + 1 }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_truthy
-      expect(response.status).to eq(404)
-    end
-  end
-
-  describe "GET api/v1/recipes#show" do
-    it "returns recipes ingredients" do
-      recipe = create(:recipe, status: RecipeStatus::WAITING_ACTIVATION)
-      get :ingredients, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_truthy
-      expect(response.status).to eq(200)
-
-      get :ingredients, params: { id: recipe.id + 1 }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_truthy
-      expect(response.status).to eq(404)
-
-      ingredient = create(:ingredient)
-      recipe.ingredients_list << ingredient
-      get :ingredients, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_falsey
-      expect(json.size).to eq(1)
-      expect(json.first["id"]).to eq(ingredient.id)
-      expect(json.first["name"]).to eq(ingredient.name)
-      expect(response.status).to eq(200)
-
-      recipe.ingredients_list << create(:ingredient)
-      get :ingredients, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_falsey
-      expect(json.size).to eq(2)
-      expect(response.status).to eq(200)
-
-      create(:ingredient)
-      get :ingredients, params: { id: recipe.id }
-      json = JSON.parse(response.body)
-      expect(json.empty?).to be_falsey
-      expect(json.size).to eq(2)
-      expect(response.status).to eq(200)
+      params[:page] = 1
+      get :index, params: params
+      result = JSON.parse(response.body)
+      expect(result.size).to eq(5)
     end
   end
 end
