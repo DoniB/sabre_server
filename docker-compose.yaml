@@ -1,0 +1,23 @@
+version: '3'
+services:
+  postgres:
+    restart: always
+    image: postgres:9.6
+    environment:
+      POSTGRES_PASSWORD: postgres_password
+  web:
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: ./start_server.sh
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/opt/sabre
+    depends_on:
+      - postgres
+    environment:
+      - SABRE_DATABASE_USERNAME=postgres
+      - SABRE_DATABASE_PASSWORD=postgres_password
+      - SABRE_DATABASE_HOST=postgres

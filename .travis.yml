@@ -1,29 +1,29 @@
-env:
-  global:
-  - secure: WBrA2Q2Bk9dRWwcGJME+/P56Kck4jfR0zBGyyl4KaEJMSCa6ERsMc64VnLVGWr32XAAv7Yu8hGxkeslpxui2vhEj509nVwuxydlzycb/7IPckju7y5FG1QPwn5KqG9v7qG8Hkb4/hLHk+yjODmBPo1fmUTAcR57k/Mwb2CSyky/6+0kgQJxL2+/9NkXd4tk/lX99em5yKawaaFrKJXP0NLDd4IyC/j314xTfKe56Vy8H6ElrojnUl9eV69fkVEElDLrQfk8Typ5g5zdMVYnPQKgYqHSUjaZtWidKTaGq8BarOGAarLN+sWI+VMul8hQE+tawp/phq95S4GoOkrki0tJgymn/FrUUnsh/LMwpI0kQLQj+Y90QJBFjdjR1oOso5j3dPqp1uOAASxDcT6VZ8dfT64oboyLN+XEd6arXPlZyyWVQ7hLU6znJ3xMnYTNQRf1D70OprSOzFu58iwbs5RX4ta8u6GShz/BGNvPBTkhebLysRThinz1S+aX2ZoWFlPAh4JzrF7yGsjD7lbDMJ5SDdviU5iiUFxAViYAWCtUpHPS8FgSlOIj3NvFZiKeCKXL48qJo2X6YBb8L1oTP/5cqNr3/ZbUP64TA5EWPmu/ysrQFeLkGoXqcYAo4Gx3IkvlyLeYX7yNVK2MwFNF7wwSa8veb+O7xL4Xo1rvkMPU=
-addons:
-  postgresql: 9.6
-before_script:
-- cp config/database.yml.travis config/database.yml
-- psql -c 'create database travis_ci_test;' -U postgres
-- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
-  > ./cc-test-reporter
-- chmod +x ./cc-test-reporter
-- "./cc-test-reporter before-build"
-dist: trusty
-language: ruby
-rvm:
-- 2.5.1
-script:
-- bundle exec rails db:migrate RAILS_ENV=test
-- bundle exec rspec
-after_script:
-- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
-deploy:
-  provider: heroku
-  app: sabre-api
-  api_key:
-    secure: sO67IQlvo5+rUFzHz7Bk2RumYuyWNqSH9zH56WJUQso6rsiDT6b7FCVh05PfKeW5ouoqW0Ld2Y/wnq4PV2l5gqUTK7/Nu5tq0wB0FMCn/QczXi39Z0qeYiHyr68FZjOu6j+SB84jexsrBdYRdPVaux/DTr0W583idPcxjWKB52aWyWQpWp7xRb5mKHNjFZ5rQG480iJSa8QlY/NTZlRtafNTE5oCjKfaEJFzFCLvQ7Ke96+FZYZzn+6mihMgGID3d4UCU2Bk7e4BvOZRo3y7JH3MX2/OPlOFXPE9Jv5At/I4QFpVXVFIFU2Vfo4iL5mtqWZ5tu3PrDJKfELQbxnwdZZNKaF01Zcyka8hpmoJn0VkhVjuLhiMuINxtQzQrF9ES+MSZYBPCF7+kEQCbrW4NUSDiVDs4yWVAAqeNaSqjze58jzXkBH5qo+XeaZyJk/o/CavKMYuoRlL21Y/kWZaOBq8B9WcbGrESpkV3sg1gyj9bdw5opPoXlB7NKNpGo8g31igDMonpbs+/NjlkO1AtHjOiG4kWgXZ5nIos0n/ZvEJRRfl8Hbd6AcuHdsw1fTHITYAWl4j8cIoHuZrsxd6Kx/jEe04p2sXOKoKrjXtBLc/KRdxYaBeNGSV1HOJKQXQUR+3NcdB1Chpk/qwITCvWH7MBix4Ktmb0cY2N3J3AVI=
-  run:
-    - "rails db:migrate"
-    - restart
+#env:
+#  global:
+#  - secure: WBrA2Q2Bk9dRWwcGJME+/P56Kck4jfR0zBGyyl4KaEJMSCa6ERsMc64VnLVGWr32XAAv7Yu8hGxkeslpxui2vhEj509nVwuxydlzycb/7IPckju7y5FG1QPwn5KqG9v7qG8Hkb4/hLHk+yjODmBPo1fmUTAcR57k/Mwb2CSyky/6+0kgQJxL2+/9NkXd4tk/lX99em5yKawaaFrKJXP0NLDd4IyC/j314xTfKe56Vy8H6ElrojnUl9eV69fkVEElDLrQfk8Typ5g5zdMVYnPQKgYqHSUjaZtWidKTaGq8BarOGAarLN+sWI+VMul8hQE+tawp/phq95S4GoOkrki0tJgymn/FrUUnsh/LMwpI0kQLQj+Y90QJBFjdjR1oOso5j3dPqp1uOAASxDcT6VZ8dfT64oboyLN+XEd6arXPlZyyWVQ7hLU6znJ3xMnYTNQRf1D70OprSOzFu58iwbs5RX4ta8u6GShz/BGNvPBTkhebLysRThinz1S+aX2ZoWFlPAh4JzrF7yGsjD7lbDMJ5SDdviU5iiUFxAViYAWCtUpHPS8FgSlOIj3NvFZiKeCKXL48qJo2X6YBb8L1oTP/5cqNr3/ZbUP64TA5EWPmu/ysrQFeLkGoXqcYAo4Gx3IkvlyLeYX7yNVK2MwFNF7wwSa8veb+O7xL4Xo1rvkMPU=
+#addons:
+#  postgresql: 9.6
+#before_script:
+#- cp config/database.yml.travis config/database.yml
+#- psql -c 'create database travis_ci_test;' -U postgres
+#- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64
+#  > ./cc-test-reporter
+#- chmod +x ./cc-test-reporter
+#- "./cc-test-reporter before-build"
+#dist: trusty
+#language: ruby
+#rvm:
+#- 2.5.1
+#script:
+#- bundle exec rails db:migrate RAILS_ENV=test
+#- bundle exec rspec
+#after_script:
+#- "./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT"
+#deploy:
+#  provider: heroku
+#  app: sabre-api
+#  api_key:
+#    secure: sO67IQlvo5+rUFzHz7Bk2RumYuyWNqSH9zH56WJUQso6rsiDT6b7FCVh05PfKeW5ouoqW0Ld2Y/wnq4PV2l5gqUTK7/Nu5tq0wB0FMCn/QczXi39Z0qeYiHyr68FZjOu6j+SB84jexsrBdYRdPVaux/DTr0W583idPcxjWKB52aWyWQpWp7xRb5mKHNjFZ5rQG480iJSa8QlY/NTZlRtafNTE5oCjKfaEJFzFCLvQ7Ke96+FZYZzn+6mihMgGID3d4UCU2Bk7e4BvOZRo3y7JH3MX2/OPlOFXPE9Jv5At/I4QFpVXVFIFU2Vfo4iL5mtqWZ5tu3PrDJKfELQbxnwdZZNKaF01Zcyka8hpmoJn0VkhVjuLhiMuINxtQzQrF9ES+MSZYBPCF7+kEQCbrW4NUSDiVDs4yWVAAqeNaSqjze58jzXkBH5qo+XeaZyJk/o/CavKMYuoRlL21Y/kWZaOBq8B9WcbGrESpkV3sg1gyj9bdw5opPoXlB7NKNpGo8g31igDMonpbs+/NjlkO1AtHjOiG4kWgXZ5nIos0n/ZvEJRRfl8Hbd6AcuHdsw1fTHITYAWl4j8cIoHuZrsxd6Kx/jEe04p2sXOKoKrjXtBLc/KRdxYaBeNGSV1HOJKQXQUR+3NcdB1Chpk/qwITCvWH7MBix4Ktmb0cY2N3J3AVI=
+#  run:
+#    - "rails db:migrate"
+#    - restart
