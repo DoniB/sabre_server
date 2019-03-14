@@ -10,7 +10,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    command: ./start_server.sh
+    command: bash start_server.sh
     ports:
       - "3000:3000"
     volumes:
