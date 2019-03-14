@@ -83,6 +83,4 @@ test:
 #
 production:
   <<: *default
-  database: sabre_server_production
-  username: sabre_server
-  password: <%= ENV['SABRE_SERVER_DATABASE_PASSWORD'] %>
+  database: <%= ENV['SABRE_DATABASE'] || 'sabre_server_production' %>
