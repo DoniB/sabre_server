@@ -6,6 +6,11 @@ while ! nc -z postgres 5432; do
 done
 echo "PostgreSQL launched"
 
+if [ "$RAILS_ENV" == "test" ]
+then
+    bundle install
+fi
+
 rm -rf /opt/sabre/tmp/pids/server.pi*
 bundle exec rake db:create &> /dev/null && echo "Database created" || echo "Database already exists"
 bundle exec rake db:migrate
