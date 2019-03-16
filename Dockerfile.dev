@@ -7,7 +7,7 @@ WORKDIR /opt/sabre
 ADD ./Gemfile /opt/sabre/Gemfile
 ADD ./Gemfile.lock /opt/sabre/Gemfile.lock
 
-RUN bundle install
+RUN bundle install  --jobs 20 --retry 5
 
 COPY ./ ./
 
