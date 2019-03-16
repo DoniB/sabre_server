@@ -10,3 +10,5 @@ ADD ./Gemfile.lock /opt/sabre/Gemfile.lock
 RUN bundle install
 
 COPY ./ ./
+
+CMD ["bash", "start_server.sh"]

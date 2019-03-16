@@ -14,6 +14,9 @@ if [ "$RAILS_ENV" == "production" ]
 then
     echo Starting production server...
     bundle exec puma -C config/puma.rb
+elif [ "$RAILS_ENV" == "test" ]
+then
+    bundle exec rspec
 else
     bundle exec rake db:seed
     echo Starting development server...
