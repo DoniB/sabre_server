@@ -11,7 +11,6 @@ ADD ./Gemfile /opt/sabre/Gemfile
 ADD ./Gemfile.lock /opt/sabre/Gemfile.lock
 
 COPY ./ ./
-
 RUN bundle install --jobs 20 --retry 5 --without development test 
 
 EXPOSE  3000
