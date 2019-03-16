@@ -29,7 +29,7 @@ before_script:
   - "./cc-test-reporter before-build"
 
 script:
-  - docker-compose run -e RAILS_ENV=test web bundle exec rspec
+  - docker-compose run -e RAILS_ENV=test web bundle install \&\& bundle exec rspec
 
 after_script:
   - docker-compose down
