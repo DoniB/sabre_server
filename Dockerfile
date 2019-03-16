@@ -1,6 +1,6 @@
 FROM ruby:2.5.3
 
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs postgresql-client-9.6
+RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs postgresql-client-9.6 netcat
 
 WORKDIR /opt/sabre
 
