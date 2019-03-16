@@ -1,6 +1,6 @@
 sudo: required
 
-dist: trusty
+# dist: trusty
 
 services:
   - docker
@@ -14,8 +14,8 @@ env:
 before_install:
   - docker-compose build
   - docker-compose up -d
-  - gem install bundler -v 1.17.3
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+#  - gem install bundler -v 1.17.3
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
