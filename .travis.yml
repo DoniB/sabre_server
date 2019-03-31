@@ -14,8 +14,16 @@ env:
     - secure: WBrA2Q2Bk9dRWwcGJME+/P56Kck4jfR0zBGyyl4KaEJMSCa6ERsMc64VnLVGWr32XAAv7Yu8hGxkeslpxui2vhEj509nVwuxydlzycb/7IPckju7y5FG1QPwn5KqG9v7qG8Hkb4/hLHk+yjODmBPo1fmUTAcR57k/Mwb2CSyky/6+0kgQJxL2+/9NkXd4tk/lX99em5yKawaaFrKJXP0NLDd4IyC/j314xTfKe56Vy8H6ElrojnUl9eV69fkVEElDLrQfk8Typ5g5zdMVYnPQKgYqHSUjaZtWidKTaGq8BarOGAarLN+sWI+VMul8hQE+tawp/phq95S4GoOkrki0tJgymn/FrUUnsh/LMwpI0kQLQj+Y90QJBFjdjR1oOso5j3dPqp1uOAASxDcT6VZ8dfT64oboyLN+XEd6arXPlZyyWVQ7hLU6znJ3xMnYTNQRf1D70OprSOzFu58iwbs5RX4ta8u6GShz/BGNvPBTkhebLysRThinz1S+aX2ZoWFlPAh4JzrF7yGsjD7lbDMJ5SDdviU5iiUFxAViYAWCtUpHPS8FgSlOIj3NvFZiKeCKXL48qJo2X6YBb8L1oTP/5cqNr3/ZbUP64TA5EWPmu/ysrQFeLkGoXqcYAo4Gx3IkvlyLeYX7yNVK2MwFNF7wwSa8veb+O7xL4Xo1rvkMPU=
 
 before_install:
+  - openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d
   - docker-compose build
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud config set project tcc-sabre
+  - gcloud config set compute/zone us-central1-a
+  - gcloud container clusters get-credentials tcc-sabre-cluster-1
 
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter

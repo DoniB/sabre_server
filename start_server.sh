@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Waiting for PostgreSQL to launch on 5432..."
-while ! nc -z postgres 5432; do
+while ! nc -z $SABRE_DATABASE_HOST 5432; do
   sleep 0.1
 done
 echo "PostgreSQL launched"
