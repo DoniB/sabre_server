@@ -9,7 +9,7 @@
 require 'factory_bot_rails'
 require 'recipe_status'
 
-if Recipe.count == 0
+if Recipe.count == 0 && Rails.env.development?
   40.times { FactoryBot::create :recipe, status: RecipeStatus::ACTIVE }
   30.times { FactoryBot::create :recipe, status: RecipeStatus::WAITING_ACTIVATION }
   20.times { FactoryBot::create :recipe, status: RecipeStatus::REJECTED }
