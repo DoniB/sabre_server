@@ -12,6 +12,15 @@ then
 fi
 
 rm -rf /opt/sabre/tmp/pids/server.pi*
+
+if [ "$JMETER" == "1" ]
+then
+    export RAILS_ENV=production
+    export SABRE_DATABASE=sabre_jmeter
+    export DISABLE_DATABASE_ENVIRONMENT_CHECK=1
+    bundle exec rake db:drop
+fi
+
 bundle exec rake db:create &> /dev/null && echo "Database created" || echo "Database already exists"
 bundle exec rake db:migrate
 
