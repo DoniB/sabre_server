@@ -20,3 +20,6 @@ services:
       - SABRE_DATABASE_USERNAME=postgres
       - SABRE_DATABASE_PASSWORD=postgres_password
       - SABRE_DATABASE_HOST=postgres
+      - RAILS_MASTER_KEY=${SABRE_RAILS_MASTER_KEY}
+      - JMETER=1
+      - RAILS_ENV=production

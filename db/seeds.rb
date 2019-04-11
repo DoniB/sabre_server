@@ -24,3 +24,25 @@ if Category.count == 0
     Category.create name: c
   end
 end
+
+if ENV['JMETER'] == '1'
+  puts "SEED: JMETER"
+  puts "SABRE_DATABASE: #{ENV['SABRE_DATABASE']}"
+  ingredients_plain = File.read(Rails.root.join('jmeter', 'ingredients.cvs')).split("\n")
+  ingredients = ingredients_plain.map { |i| Ingredient.create name: i }
+  category = Category.first
+  user = FactoryBot::create :user
+
+  (1..(ingredients.size)).each do |i|
+    ingredients.combination(i).each do |c|
+      ingr =  c.map { |n| n.name }.join(', ')
+      recipe = Recipe.create name: 'Recipe name', 
+                    ingredients: ingr,
+                    directions: ingr,
+                    category: category,
+                    user: user,
+                    status: RecipeStatus::ACTIVE
+      recipe.ingredients_list = c
+    end
+  end
+end
