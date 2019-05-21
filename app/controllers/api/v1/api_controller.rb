@@ -32,13 +32,13 @@ module Api::V1
     end
 
     def base64_to_image(text)
-      hash = get_image_hash text
-      hash[:tempfile] = get_temp_file(text.split(",")[1])
+      hash = ApiController.get_image_hash text
+      hash[:tempfile] = ApiController.get_temp_file(text.split(",")[1])
       ActionDispatch::Http::UploadedFile.new hash
     end
   end
 
-    def get_image_hash(text)
+    def self.get_image_hash(text)
       if text.start_with? "data:image/jpeg"
         { filename: "cover.jpg", type: "image/jpeg" }
       elsif texto.start_with? "data:image/png"
