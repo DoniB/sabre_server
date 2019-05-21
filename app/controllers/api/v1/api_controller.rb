@@ -4,6 +4,24 @@ module Api::V1
   class ApiController < ApplicationController
   # Global Methods
 
+   def self.get_image_hash(text)
+     if text.start_with? "data:image/jpeg"
+       { filename: "cover.jpg", type: "image/jpeg" }
+     elsif texto.start_with? "data:image/png"
+       { filename: "cover.png", type: "image/png" }
+     else
+       raise "Invalid image data"
+     end
+   end
+
+    def self.get_temp_file(base64_encoded_text)
+      tempfile = Tempfile.new("test_temp")
+      tempfile.binmode
+      tempfile.write(Base64.decode64 base64_encoded_text)
+      tempfile.close
+      tempfile
+    end
+
   protected
     def user_hidden_fields
       [:password,
@@ -37,22 +55,4 @@ module Api::V1
       ActionDispatch::Http::UploadedFile.new hash
     end
   end
-
-    def self.get_image_hash(text)
-      if text.start_with? "data:image/jpeg"
-        { filename: "cover.jpg", type: "image/jpeg" }
-      elsif texto.start_with? "data:image/png"
-        { filename: "cover.jpg", type: "image/png" }
-      else
-        raise "Invalid image data"
-      end
-    end
-
-    def self.get_temp_file(base64_encoded_text)
-      tempfile = Tempfile.new("test_temp")
-      tempfile.binmode
-      tempfile.write(Base64.decode64 base64_encoded_text)
-      tempfile.close
-      tempfile
-    end
 end
