@@ -38,8 +38,6 @@ module Api::V1
     end
   end
 
-  private
-
     def get_image_hash(text)
       if text.start_with? "data:image/jpeg"
         { filename: "cover.jpg", type: "image/jpeg" }
