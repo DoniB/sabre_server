@@ -11,8 +11,8 @@ RSpec.describe Api::V1::ApiController, type: :controller do
     expect(result[:filename]).to eq "cover.jpg"
     expect(result[:type]).to eq "image/jpeg"
 
-    tempfile = ApiController.get_temp_file(img_json.split(",")[1])
-    expect(File.file? tempfile.path).to be_truty
+    tempfile = Api::V1::ApiController.get_temp_file(img_json.split(",")[1])
+    expect(File.file? tempfile.path).to be_truthy
     expect(Digest::MD5.file tempfile.path).to eq '431368afc79bffb495a8a66890aaaa88'
   end
 
