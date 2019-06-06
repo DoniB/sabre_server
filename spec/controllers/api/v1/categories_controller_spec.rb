@@ -118,8 +118,6 @@ RSpec.describe Api::V1::CategoriesController, type: :controller do
     it "Should NOT create a category as visitor" do
       expect(Category.count).to eq(0)
 
-      name = "My new visitor category"
-
       category = Category.create name: "old name"
 
       expect(Category.count).to eq(1)

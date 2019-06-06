@@ -10,7 +10,7 @@ class Api::V2::RecipesController < ApplicationController
     def get_recipes
       @recipes = Recipe.active.page(params[:page])
       filter_recipes_by_category
-      if params[:by_ingredients] && params[:q]
+      if params[:by_ingredients] && params[:q] && params[:q].include?(",")
         filter_recipes_by_ingredients
       else
         filter_recipes_by_query

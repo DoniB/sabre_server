@@ -117,7 +117,7 @@ RSpec.describe Api::V2::RecipesController, type: :controller do
     end
 
     it "filter recipes by query" do
-      recipe = create(:recipe, status: RecipeStatus::ACTIVE, name: "receitas caseiras", ingredients: "bananas maçãs")
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE, name: "receitas caseiras", ingredients: "bananas ma\xC3\xA7\xC3\xA3s")
       get :index, params: { q: "receita" }
       json = JSON.parse(response.body)
       expect(json.size).to eq(1)
@@ -144,35 +144,43 @@ RSpec.describe Api::V2::RecipesController, type: :controller do
       expect(recipe.id).to_not eq(recipe2.id)
     end
 
+    it "filter recipes by query when no coma in query string" do
+      recipe = create(:recipe, status: RecipeStatus::ACTIVE, name: "receitas caseiras", ingredients: "bananas ma\xC3\xA7\xC3\xA3s")
+      get :index, params: { q: "receita", by_ingredients: "t" }
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(1)
+      expect(json[0]["id"]).to eq(recipe.id)
+    end
+
     it "get recipes by ingredients" do
       ingredients_for_search = []
       [
-          "banana",
-          "alho",
-          "ovo",
-          "frango",
-          "leite condensado"
+        "banana",
+        "alho",
+        "ovo",
+        "frango",
+        "leite condensado"
       ].each { |name| ingredients_for_search << create(:ingredient, name: name) }
 
       ingredients = []
       [
-          "ovomaltine",
-          "creme de leite",
-          "maça",
-          "cebola",
-          "macarrão"
+        "ovomaltine",
+        "creme de leite",
+        "ma\xC3\xA7a",
+        "cebola",
+        "macarr\xC3\xA3o"
       ].each { |name| ingredients << create(:ingredient, name: name) }
 
       expect(Ingredient.count).to eq(10)
-      (1..ingredients.size).each { |size|
-        ingredients.combination(size).each { |ingredients_combination|
+      (1..ingredients.size).each do |size|
+        ingredients.combination(size).each do |ingredients_combination|
           create(:recipe, ingredients_list: ingredients_combination)
-        }
-      }
+        end
+      end
 
       params = {
-          q: ingredients_for_search.map(&:name).join(", "),
-          by_ingredients: "t"
+        q: ingredients_for_search.map(&:name).join(", "),
+        by_ingredients: "t"
       }
 
       5.times { create :recipe, status: RecipeStatus::ACTIVE }
@@ -182,20 +190,19 @@ RSpec.describe Api::V2::RecipesController, type: :controller do
       expect(result.size).to eq(0)
       recipes = []
 
-      (1..5).each { |total|
+      (1..5).each do |total|
         recipes << create(:recipe, status: RecipeStatus::ACTIVE, ingredients_list: ingredients_for_search[0, total])
         get :index, params: params
         result = JSON.parse(response.body)
         expect(result.size).to eq(total)
         expect(result.map { |r| r["id"] }.sort).to eq(recipes.map(&:id).sort)
-      }
-
+      end
 
       get :index, params: params
       result = JSON.parse(response.body)
       expect(result.size).to eq(5)
 
-      20.times { create :recipe, status: RecipeStatus::ACTIVE, ingredients_list: [ingredients_for_search[0], ingredients[0] ] }
+      20.times { create :recipe, status: RecipeStatus::ACTIVE, ingredients_list: [ingredients_for_search[0], ingredients[0]] }
       get :index, params: params
       result = JSON.parse(response.body)
       expect(result.size).to eq(5)
